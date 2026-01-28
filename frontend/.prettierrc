@@ -1,0 +1,32 @@
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "semi": true,
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrder": [
+    "^[a-zA-Z]",
+
+    "^@data/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^@context/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^@layouts/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^@pages/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^@components/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^@elements/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^@assets/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^@public/(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)(.*)$",
+    "^(?!.*\\.(css|json|png|jpg|jpeg|gif|webp|mp3|webm)$)@",
+
+    ".*\\.json$",
+
+    ".*\\.css$",
+
+    ".*\\.(png|jpg|jpeg|gif|webp|mp3|webm)$",
+
+    "^\\./",
+    "^\\.\\./"
+  ],
+  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"]
+}
