@@ -1,19 +1,15 @@
-![geo-insight-icon.png](https://raw.githubusercontent.com/abdulaah-alchag/Map-Told/refs/heads/main/frontend/src/assets/images/geo-insight-icon.png)
+![maptold-icon.png](https://raw.githubusercontent.com/abdulaah-alchag/Map-Told/refs/heads/main/frontend/src/assets/images/maptold-icon.png)
 
 # Map-Told
 
 ## Der virtuelle Aussichtspunkt
 
-
-
 **Beschreibung:**
 
 Gib einen geografischen Punkt an und erhalte relevante Informationen zu seiner Umgebung, serviert von deiner Standort-KI.
 
-
 <br>
 <br>
-
 
 ### Projekt-Links:
 
