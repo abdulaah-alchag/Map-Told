@@ -13,7 +13,7 @@ Gib einen geografischen Punkt an und erhalte relevante Informationen zu seiner U
 
 ### Projekt-Links:
 
-[ProjectBoard] (https://github.com/users/abdulaah-alchag/projects/1)
+[ProjectBoard](https://github.com/users/abdulaah-alchag/projects/1)
 
 [Figma (MockUp, User- und Daten-Flow)](https://www.figma.com/design/zHE5Sr7PUVEB02xy7u2TS6/WBS-Finalprojekt?node-id=0-1&p=f&t=fhGkATpr1tifTVTN-0)
 
