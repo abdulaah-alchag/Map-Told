@@ -1,0 +1,3 @@
+.hero-bg-image {
+  @apply bg-[url('../src/assets/images/maptold-hero-mobile.webp')] bg-cover bg-center;
+}

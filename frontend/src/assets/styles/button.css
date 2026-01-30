@@ -1,0 +1,7 @@
+.btn {
+  @apply font-A rounded-xl text-white italic;
+}
+
+.btn-primary {
+  @apply bg-mt-color-3;
+}
