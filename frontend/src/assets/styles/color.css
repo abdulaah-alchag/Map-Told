@@ -1,4 +1,10 @@
 @theme {
   --color-mt-color-1: #f3edf7;
-  --color-mt-color-2: #50087d;
+  --color-mt-color-2: #816eb3;
+  --color-mt-color-3: #50087d;
+}
+
+/* Global settings */
+body {
+  @apply bg-slate-300;
 }

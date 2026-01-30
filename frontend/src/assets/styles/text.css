@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'KodeMono';
-  src: url(@assets/fonts/KodeMono-VariableFont_wght.ttf) format('truetype');
+  src: url(@assets/fonts/Lexend-VariableFont_wght.ttf) format('truetype');
   font-weight: 100 900;
 }
 
@@ -21,21 +21,21 @@ html {
 }
 
 body {
-  @apply font-B text-base antialiased;
+  @apply font-B text-base text-sm antialiased;
 }
 
 h1 {
-  @apply text-mt-color-2 font-A pt-8 pb-4 text-[2.5rem] leading-tight font-bold;
+  @apply text-mt-color-3 font-A pt-8 pb-4 text-3xl leading-tight font-bold;
 }
 
 h2 {
-  @apply text-mt-color-2 font-A pt-6 pb-3 text-[2rem] leading-snug font-bold;
+  @apply text-mt-color-3 font-A pt-6 pb-3 text-2xl leading-snug font-bold;
 }
 
 h3 {
-  @apply text-mt-color-2 font-A pt-4 pb-2 text-[1.5rem] leading-snug font-semibold;
+  @apply text-mt-color-3 font-A pt-4 pb-2 text-xl leading-snug font-semibold;
 }
 
 h4 {
-  @apply font-A pt-4 pb-2 text-[1.25rem] leading-normal font-semibold;
+  @apply font-A pt-4 pb-3 text-lg leading-normal font-semibold;
 }
