@@ -15,11 +15,8 @@ app.get('/', (req, res) => res.send('Map-Told API is running!'));
 
 app.use('/features', featuresRoutes);
 app.use('/geo', geoRoutes);
-
-app.use('/*splat', notFoundHandler);
-
 app.use('/question', questionRoutes)
-
+app.use('/*splat', notFoundHandler);
 
 
 app.get('/', (req, res) => res.send('RestAPI is running'));
