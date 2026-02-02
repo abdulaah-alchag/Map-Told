@@ -1,8 +1,13 @@
-// models/Product.ts
 import { Schema, model, type InferSchemaType } from "mongoose";
+//import {Zone} from "#models"
 
 const questionSchema = new Schema(
   {
+    zoneId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Zone',
+      required: [true, 'Zone ID is required']
+    },
     question: {
       type: String,
       required: [true, "question is required"],
@@ -14,6 +19,14 @@ const questionSchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      transform(doc, ret: any) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      }
+    }
   }
 );
 

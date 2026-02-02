@@ -1,5 +1,5 @@
 import { z } from 'zod/v4';
-import { Types } from 'mongoose';
+import { isValidObjectId, Types } from 'mongoose';
  
 export const questionInputSchema = z
   .object({
@@ -8,7 +8,9 @@ export const questionInputSchema = z
     }),
     answer: z.string({ error: 'Answer must be a string' }).min(1, {
       message: 'Answer is required'
-    })
+    }),
+    zoneId: z.string().refine(val => isValidObjectId(val), { error: 'Not a valid ObjectId' })
+    .transform(val => new Types.ObjectId(val)),
   })
   .strict();
  
