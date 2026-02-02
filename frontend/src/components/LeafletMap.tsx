@@ -16,7 +16,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 export const LeafletMap = ({ className = '' }: { className?: string }) => {
   return (
     /* Container MUST have a height */
-    <div className={`z-10 min-h-fit w-full ${className}`}>
+    <div className={`z-10 min-h-fit w-full bg-white lg:px-20 lg:pt-10 ${className}`}>
       <MapContainer
         center={[44.19505, 1.95455]}
         zoom={13}
@@ -31,7 +31,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           <Popup>MapTold: Your location data starts here.</Popup>
         </Marker>
       </MapContainer>
-      <div id='Map-Filter' className='grid h-fit grid-cols-4 gap-3 p-5'>
+      <div id='Map-Filter' className='grid h-fit grid-cols-4 gap-3 p-5 lg:px-0'>
         <button className='btn-mapfilter'>Grünfläche</button>
         <button className='btn-mapfilter'>Gebäude</button>
         <button className='btn-mapfilter'>Strassen</button>

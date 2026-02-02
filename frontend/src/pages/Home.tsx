@@ -9,16 +9,16 @@ export const Home = () => {
       <title>MapTold - Home</title>
       <main className=''>
         {/* HERO SECTION ============== */}
-        <div id='Hero' className='hero bg-base-200 hero-bg-image min-h-screen'>
-          <div className='hero-content h-full pt-10 pb-20 text-center'>
-            <div className='flex h-[80%] max-w-md flex-col items-center justify-between'>
+        <div id='Hero' className='hero hero-bg-image h-screen'>
+          <div className='hero-content h-full pb-20 text-center lg:mb-40 lg:h-[80%]'>
+            <div className='flex h-[85%] max-w-md flex-col items-center justify-between lg:h-full lg:max-w-xl'>
               <App_Logo className='w-[40%]'></App_Logo>
-              <h1 className='px-6 text-5xl font-bold'>Dein virtueller Aussichtsturm</h1>
+              <h1 className='px-6 font-bold'>Dein virtueller Aussichtsturm</h1>
               <p className='px-10 py-8 italic'>
                 Gib einen geografischen Punkt an und erhalte relevante Informationen zu seiner
                 Umgebung, serviert von unserer Standort-KI.
               </p>
-              <button className='btn btn-primary'>
+              <button className='btn btn-primary w-70 lg:w-fit'>
                 <GoLocation />
                 Aktuellen Standort zeigen
               </button>
@@ -27,9 +27,12 @@ export const Home = () => {
         </div>
 
         {/* FORM SECTION ============== */}
-        <div id='Location-Form' className='bg-mt-color-1 flex flex-col justify-center p-5 pb-20'>
-          <h2>Zielort eingeben:</h2>
-          <form className='location-form-grid'>
+        <div id='Location-Form' className='bg-mt-color-4 flex flex-col justify-center lg:flex-row'>
+          <div className='bg-mt-color-5 hidden h-150 w-[50%] lg:flex'>
+            <div className='form-beside-image h-full w-full'></div>
+          </div>
+          <form className='location-form-grid p-5 pt-20 pb-40 lg:p-20'>
+            <h2>Zielort eingeben:</h2>
             <input type='text' className='input' placeholder='Strasse' />
             <div className='grid grid-cols-[30%_1fr] gap-2'>
               <input type='text' className='input' placeholder='PLZ' />
@@ -40,7 +43,7 @@ export const Home = () => {
               <input type='number' className='input' placeholder='Latitude' />
             </div>
 
-            <button className='btn btn-secondary m-auto mt-4 w-30' type='button'>
+            <button className='btn btn-secondary m-auto mt-14 w-70 lg:w-70' type='button'>
               <GoSearch />
               Suchen
             </button>
@@ -48,8 +51,8 @@ export const Home = () => {
         </div>
 
         {/* MAP SECTION ============== */}
-        <div id='Map-Section' className='h-full'>
-          <div className='px-5 pt-15 pb-5'>
+        <div id='Map-Section' className='bg-mt-color-1 h-full'>
+          <div className='px-5 pt-15 pb-5 lg:px-20'>
             <h2>Ergebnisse:</h2>
           </div>
           <div id='Leaflet-Container' className='h-full'>
@@ -58,7 +61,10 @@ export const Home = () => {
         </div>
 
         {/* RESULTS SECTION ============== */}
-        <div id='Results' className='grid grid-rows-[min-content_min-content_1fr] gap-10 p-5 pb-15'>
+        <div
+          id='Results'
+          className='grid grid-rows-[min-content_min-content_1fr] gap-10 p-5 pb-35 lg:p-20 lg:pb-40'
+        >
           <div id='Weather' className='grid grid-cols-[33%_1fr] gap-5'>
             <div>
               <b>Aktuelles Wetter:</b>
@@ -81,7 +87,7 @@ export const Home = () => {
             </div>
           </div>
           <div id='AI-Text' className='grid grid-cols-[1fr] gap-5'>
-            <div>
+            <div className='lg:text-2xl'>
               <b>Umgebung:</b>
             </div>
             <div className='text-justify'>
