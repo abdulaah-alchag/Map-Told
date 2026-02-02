@@ -1,11 +1,11 @@
-.index-container {
-  @apply bg-white;
+.app-container {
+  @apply border-mt-color-4 m-auto max-w-[1600px] border-x-1 bg-white shadow-xl;
 }
 
 .location-form-grid {
-  @apply grid grid-cols-[1fr_] gap-2;
+  @apply m-auto grid gap-2 lg:w-xl;
 
   input {
-    @apply w-full font-medium opacity-80;
+    @apply w-full bg-white font-medium opacity-80;
   }
 }

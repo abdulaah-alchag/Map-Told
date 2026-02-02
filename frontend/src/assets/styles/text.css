@@ -21,11 +21,11 @@ html {
 }
 
 body {
-  @apply font-B text-base text-sm antialiased;
+  @apply font-B text-sm antialiased sm:text-base lg:text-lg;
 }
 
 h1 {
-  @apply text-mt-color-3 font-A pt-10 pb-5 text-3xl leading-tight font-bold;
+  @apply text-mt-color-3 font-A pt-10 pb-5 text-3xl leading-tight font-bold sm:text-4xl md:text-5xl lg:text-6xl;
 }
 
 h2 {
