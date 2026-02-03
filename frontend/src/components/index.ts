@@ -1,3 +1,4 @@
-export { NavBar } from './NavBar';
-export { LeafletMap } from './LeafletMap';
 export { Footer } from './Footer';
+export { LeafletMap } from './LeafletMap';
+export { Narratives } from './Narratives';
+export { NavBar } from './NavBar';

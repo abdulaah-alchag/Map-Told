@@ -1,7 +1,7 @@
 import { GoLocation, GoSearch, GoSun } from 'react-icons/go';
 
 import { App_Logo } from '@/components/elements';
-import { LeafletMap } from '@components';
+import { LeafletMap, Narratives } from '@components';
 
 export const Home = () => {
   return (
@@ -50,38 +50,7 @@ export const Home = () => {
           </form>
         </div>
         {/* NARRATIVE SECTION ========== */}
-        <div id='Narratives' className='h-200 md:h-280 lg:h-350'>
-          <div id='Narrative-1' className='grid h-1/3 grid-cols-2'>
-            <div className='bg-mt-color-20 flex items-center justify-center p-5 text-center'>
-              <h3>
-                Finde kurzfristig<br></br> interresante Orte
-              </h3>
-            </div>
-            <div className='bg-mt-color-5'>
-              <div className='narrative-image-1 h-full'></div>
-            </div>
-          </div>
-          <div id='Narrative-2' className='grid h-1/3 grid-cols-2'>
-            <div className='bg-mt-color-5'>
-              <div className='narrative-image-2 h-full w-full'></div>
-            </div>
-            <div className='bg-mt-color-13 flex items-center justify-center p-5 text-center'>
-              <h3>
-                Plane gemeinsame <br></br> Abenteuer
-              </h3>
-            </div>
-          </div>
-          <div id='Narrative-3' className='grid h-1/3 grid-cols-2'>
-            <div className='bg-mt-color-30 flex items-center justify-center p-5 text-center'>
-              <h3>
-                Checke eine neue<br></br> Wohngegend
-              </h3>
-            </div>
-            <div className='bg-mt-color-5'>
-              <div className='narrative-image-3 h-full w-full'></div>
-            </div>
-          </div>
-        </div>
+        <Narratives visible={true}></Narratives>
 
         {/* RESPONSE SECTION =========== */}
         <div id='Response' className='hidden'>
