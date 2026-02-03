@@ -1,8 +1,6 @@
-import { GoLocation, GoSearch, GoSun } from 'react-icons/go';
+import { GoSearch, GoSun } from 'react-icons/go';
 
-import { App_Logo } from '@/components/elements';
-import { LeafletMap, Narratives } from '@components';
-import { scrollToElementID } from '@utils';
+import { Hero, LeafletMap, Narratives } from '@components';
 
 export const Home = () => {
   return (
@@ -10,25 +8,7 @@ export const Home = () => {
       <title>MapTold - Home</title>
       <main className=''>
         {/* HERO SECTION ============== */}
-        <div id='Hero' className='hero hero-bg-image h-screen'>
-          <div className='hero-content h-full pb-20 text-center lg:mb-40 lg:h-[80%]'>
-            <div className='flex h-[85%] max-w-md flex-col items-center justify-between lg:h-full lg:max-w-xl'>
-              <App_Logo className='w-[40%]'></App_Logo>
-              <h1 className='px-6 font-bold'>Dein virtueller Aussichtsturm</h1>
-              <p className='px-10 py-8 italic'>
-                Gib einen geografischen Punkt an und erhalte relevante Informationen zu seiner
-                Umgebung, serviert von unserer Standort-KI.
-              </p>
-              <button
-                onClick={() => scrollToElementID('Location-Form')}
-                className='btn btn-primary w-70 lg:w-fit'
-              >
-                <GoLocation />
-                Zielort eingeben
-              </button>
-            </div>
-          </div>
-        </div>
+        <Hero></Hero>
 
         {/* FORM SECTION =============== */}
         <div id='Location-Form' className='bg-mt-color-4 flex flex-col justify-center lg:flex-row'>
