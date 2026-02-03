@@ -6,14 +6,14 @@ import {
   deleteQuestion
   } from '#controllers';
 
-  import { validateQuestionZod } from '#middlewares';
+  import { validateZod } from '#middlewares';
   import { questionInputSchema } from '#schemas';
 
 const questionRoutes = Router();
 
 questionRoutes.route('/')
 .get(getAllQuestions)
-.post(validateQuestionZod(questionInputSchema), createQuestion);
+.post(validateZod(questionInputSchema), createQuestion);
 //validateZod(Schema)
 questionRoutes.route('/:id')
 .get(getQuestionById)

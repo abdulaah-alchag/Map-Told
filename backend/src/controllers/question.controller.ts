@@ -2,6 +2,7 @@ import { type RequestHandler } from "express";
 import { Question } from "#models";
 import { z } from "zod/v4";
 import type { questionInputSchema, questionSchema } from "#schemas";
+import {isValidObjectId} from 'mongoose';
 
 //create a type from our schema
 //Data Transfer Object (DTO)
@@ -22,6 +23,7 @@ export const createQuestion: RequestHandler<{}, QuestionDTO, QuestionInputDTO> =
 
 export const getQuestionById: RequestHandler<{ id: string }, QuestionDTO> = async (req,res) => {
   const {params: { id }} = req;
+  if (!isValidObjectId(id)) throw new Error('Invalid id', { cause: 400 });
   const question = await Question.findById(id);
   if (!question) throw new Error("Question not found", { cause: 404 });
   res.json(question);
