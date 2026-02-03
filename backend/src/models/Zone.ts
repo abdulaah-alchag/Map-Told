@@ -35,12 +35,6 @@ const zoneSchema = new Schema(
       },
       avgElevation: {
         type: Number
-      },
-      avgTemperature: {
-        type: Number
-      },
-      precipitation: {
-        type: Number
       }
     },
     aiText: {
@@ -59,5 +53,7 @@ const zoneSchema = new Schema(
     }
   }
 );
+
+zoneSchema.index({ 'coordinates.lat': 1, 'coordinates.lon': 1 });
 
 export default model('Zone', zoneSchema);
