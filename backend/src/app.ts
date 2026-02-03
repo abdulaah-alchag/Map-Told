@@ -3,7 +3,7 @@ import express from 'express';
 import '#db';
 import { CLIENT_BASE_URL } from '#config';
 import { errorHandler, notFoundHandler } from '#middlewares';
-import { geoRoutes, featuresRoutes } from '#routes';
+import { geoRoutes, featuresRoutes, questionRoutes } from '#routes';
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -15,9 +15,15 @@ app.get('/', (req, res) => res.send('Map-Told API is running!'));
 
 app.use('/features', featuresRoutes);
 app.use('/geo', geoRoutes);
-
+app.use('/question', questionRoutes)
 app.use('/*splat', notFoundHandler);
 
+
+app.get('/', (req, res) => res.send('RestAPI is running'));
+
+app.use('/*splat', (_req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
 app.use(errorHandler);
 
 app.listen(port, () => {
