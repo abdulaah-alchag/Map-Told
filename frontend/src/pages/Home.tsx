@@ -2,6 +2,7 @@ import { GoLocation, GoSearch, GoSun } from 'react-icons/go';
 
 import { App_Logo } from '@/components/elements';
 import { LeafletMap, Narratives } from '@components';
+import { scrollToElementID } from '@utils';
 
 export const Home = () => {
   return (
@@ -18,10 +19,13 @@ export const Home = () => {
                 Gib einen geografischen Punkt an und erhalte relevante Informationen zu seiner
                 Umgebung, serviert von unserer Standort-KI.
               </p>
-              <a href='#Location-Form' className='btn btn-primary w-70 lg:w-fit'>
+              <button
+                onClick={() => scrollToElementID('Location-Form')}
+                className='btn btn-primary w-70 lg:w-fit'
+              >
                 <GoLocation />
                 Zielort eingeben
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -49,6 +53,7 @@ export const Home = () => {
             </button>
           </form>
         </div>
+
         {/* NARRATIVE SECTION ========== */}
         <Narratives visible={true}></Narratives>
 
