@@ -1,4 +1,4 @@
-import { fetchOsmData, fetchElevation } from '#services';
+import { fetchOsmData, fetchElevation, openMeteo } from '#services';
 import type { ZoneInputDTO, GeoFeature, GeoFeatureCollections, GeoResponseDTO } from '#types';
 import { type RequestHandler } from 'express';
 import { getBBox } from '#utils';
@@ -22,10 +22,11 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
 
   try {
     //Fetch OSM data, elevation, and check for existing zone in parallel
-    const [osmData, elevationAvg, zoneExists] = await Promise.all([
+    const [osmData, elevationAvg, weatherData, zoneExists] = await Promise.all([
       fetchOsmData(bbox),
       fetchElevation(latFixed, lonFixed),
-      await Zone.findOne({ coordinates: { lat: latFixed, lon: lonFixed } })
+      openMeteo(latFixed, lonFixed),
+      Zone.findOne({ coordinates: { lat: latFixed, lon: lonFixed } })
     ]);
 
     //Extract layers from OSM data
@@ -57,7 +58,7 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
         greenAreas
       },
       elevation: { avg: elevationAvg },
-      weather: { temperature: 22 }, // Mocked weather data
+      weather: { temperature: weatherData.hourly.temperature_2m[0] ?? 0 }, // Mocked weather data
       aiText: 'Sample AI-generated text about the area.' // Mocked AI text
     });
   } catch (error: unknown) {
