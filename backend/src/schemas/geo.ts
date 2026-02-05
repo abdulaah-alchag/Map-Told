@@ -23,8 +23,6 @@ export const geoResponseSchema = z.object({
     water: geoFeatureCollectionsSchema
   },
   elevation: z.number().nullable(),
-  weather: {
-    temperature: z.number().nullable()
-  },
+  weather: z.record(z.string(), z.any()),
   aiText: z.string().nullable()
 });
