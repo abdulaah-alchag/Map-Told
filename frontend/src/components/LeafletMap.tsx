@@ -1,4 +1,3 @@
-// Fix for the "Missing Marker Icon" bug in build tools (Vite/Webpack)
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
