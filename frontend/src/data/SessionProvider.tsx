@@ -5,7 +5,7 @@ import type { LocationFormActionType, LocationFormType, SessionContextType } fro
 const SessionCtx = createContext<SessionContextType | undefined>(undefined);
 
 const SessionProvider = ({ children }: { children: ReactNode }) => {
-  const [locationform, dispatchLocationForm] = useReducer(LocationFormReducer, {
+  const [locationform, dispatchLocationForm] = useReducer(locationFormReducer, {
     pending: false,
     data: {
       address: {
@@ -31,27 +31,27 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
 
 export { SessionCtx, SessionProvider };
 
-function LocationFormReducer(
+function locationFormReducer(
   locationform: LocationFormType,
   action: LocationFormActionType,
 ): LocationFormType {
   const { type } = action;
 
   switch (type) {
-    case 'pendingTrue': {
-      return { ...locationform, pending: true };
+    case 'SET_PENDING': {
+      return { ...locationform, pending: action.payload };
       break;
     }
-    case 'pendingFalse': {
-      return { ...locationform, pending: false };
+    case 'SET_INPUT': {
+      return { ...locationform, input: action.payload };
       break;
     }
-    case 'inputAddress': {
-      return { ...locationform, input: 'address' };
+    case 'SET_ADDRESS': {
+      return { ...locationform, data: { ...locationform.data, address: action.payload } };
       break;
     }
-    case 'inputCoordinates': {
-      return { ...locationform, input: 'coordinates' };
+    case 'SET_COORDINATES': {
+      return { ...locationform, data: { ...locationform.data, coordinates: action.payload } };
       break;
     }
     default:

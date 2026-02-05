@@ -1,3 +1,4 @@
+import type React from 'react';
 import { LuLoader, LuSearch } from 'react-icons/lu';
 
 import { useSession } from '@data';
@@ -6,28 +7,88 @@ import { sleep } from '@utils';
 export const LocationForm = () => {
   const { locationform, dispatchLocationForm } = useSession();
 
-  const submitAction = async (e: React.FormEvent<HTMLFormElement>) => {
+  const controlFormTo = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const btnName = e.currentTarget.name;
+
+    if (btnName === 'address') {
+      await dispatchLocationForm({ type: 'SET_INPUT', payload: btnName });
+
+      const { address } = locationform.data;
+      const streetEl = document.querySelector('input[name="street"]') as HTMLInputElement | null;
+      const houseEl = document.querySelector('input[name="house"]') as HTMLInputElement | null;
+      const cityEl = document.querySelector('input[name="city"]') as HTMLInputElement | null;
+      const postalEl = document.querySelector(
+        'input[name="postalcode"]',
+      ) as HTMLInputElement | null;
+
+      if (streetEl) streetEl.value = address.street ?? '';
+      if (houseEl) houseEl.value = address.house ?? '';
+      if (cityEl) cityEl.value = address.city ?? '';
+      if (postalEl) postalEl.value = address.postalcode ?? '';
+    }
+
+    if (btnName === 'coordinates') {
+      await dispatchLocationForm({ type: 'SET_INPUT', payload: btnName });
+
+      const { coordinates } = locationform.data;
+      const latEl = document.querySelector('input[name="latitude"]') as HTMLInputElement | null;
+      const lonEl = document.querySelector('input[name="longitude"]') as HTMLInputElement | null;
+
+      if (latEl) latEl.value = coordinates.latitude != null ? String(coordinates.latitude) : '';
+      if (lonEl) lonEl.value = coordinates.longitude != null ? String(coordinates.longitude) : '';
+    }
+  };
+  const handleInputChange = (e: React.SyntheticEvent<HTMLFormElement>) => {
+    const form = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+
+    if (locationform.input === 'address') {
+      dispatchLocationForm({
+        type: 'SET_ADDRESS',
+        payload: {
+          street: toNullableString('street'),
+          house: toNullableString('house'),
+          city: toNullableString('city'),
+          postalcode: toNullableString('postalcode'),
+        },
+      });
+
+      function toNullableString(name: string): string | null {
+        const v = formData.get(name);
+        if (v === null) return null;
+        return String(v).trim() === '' ? null : String(v);
+      }
+    }
+
+    if (locationform.input === 'coordinates') {
+      dispatchLocationForm({
+        type: 'SET_COORDINATES',
+        payload: {
+          latitude: toNullableNumber('latitude'),
+          longitude: toNullableNumber('longitude'),
+        },
+      });
+
+      function toNullableNumber(name: string): number | null {
+        const v = formData.get(name);
+        if (v === null) return null;
+        const normalized = String(v).replace(',', '.').trim();
+        return normalized === '' ? null : Number(normalized);
+      }
+    }
+  };
+  const submitAction = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    /*
-    const formData = new FormData(e.currentTarget);
+    dispatchLocationForm({ type: 'SET_PENDING', payload: true });
 
-    const street = formData.get('loc-street');
-    const house = formData.get('loc-house');
-    const postalcode = formData.get('loc-postalcode');
-    const city = formData.get('loc-city');
-    const longitude = formData.get('loc-longitude');
-    const latitude = formData.get('loc-latitude');
-    */
-
-    //TODO: @utils/validateInputs
-
-    dispatchLocationForm({ type: 'pendingTrue' });
+    if (locationform.input === 'address') {
+      console.log('TODO: convert address to coordinates');
+    }
 
     await sleep(2000);
-    //TODO: send Request
 
-    console.log('Submitted: ');
-    dispatchLocationForm({ type: 'pendingFalse' });
+    console.log('Submitted: ', locationform.data.coordinates);
+    dispatchLocationForm({ type: 'SET_PENDING', payload: false });
   };
 
   return (
@@ -44,16 +105,18 @@ export const LocationForm = () => {
           <button
             type='button'
             className={`btn btn-location-form-control ${locationform.pending ? 'bg-green-100' : locationform.input === 'address' && 'bg-purple-100'}`}
-            onClick={() => dispatchLocationForm({ type: 'inputAddress' })}
             disabled={locationform.pending}
+            onClick={controlFormTo}
+            name='address'
           >
             Adresse
           </button>
           <button
             type='button'
             className={`btn btn-location-form-control ${locationform.pending ? 'bg-green-100' : locationform.input === 'coordinates' && 'bg-yellow-100'}`}
-            onClick={() => dispatchLocationForm({ type: 'inputCoordinates' })}
             disabled={locationform.pending}
+            onClick={controlFormTo}
+            name='coordinates'
           >
             Koordinaten
           </button>
@@ -73,19 +136,19 @@ export const LocationForm = () => {
             )}
           </h2>
 
-          <form onSubmit={submitAction} className='grid gap-2'>
+          <form onSubmit={submitAction} onChange={handleInputChange} className='grid gap-2'>
             {locationform.input === 'address' && (
               <>
                 <div className='grid grid-cols-[75%_1fr] gap-2'>
                   <input
-                    name='loc-street'
+                    name='street'
                     type='text'
                     className='input w-full'
                     placeholder='Strasse'
                     disabled={locationform.pending}
                   />
                   <input
-                    name='loc-house'
+                    name='house'
                     type='text'
                     className='input w-full'
                     placeholder='Nr'
@@ -94,14 +157,14 @@ export const LocationForm = () => {
                 </div>
                 <div className='grid grid-cols-[30%_1fr] gap-2'>
                   <input
-                    name='loc-postalcode'
+                    name='postalcode'
                     type='text'
                     className='input w-full'
                     placeholder='PLZ'
                     disabled={locationform.pending}
                   />
                   <input
-                    name='loc-city'
+                    name='city'
                     type='text'
                     className='input w-full'
                     placeholder='Stadt'
@@ -114,17 +177,21 @@ export const LocationForm = () => {
             {locationform.input === 'coordinates' && (
               <div className='grid gap-2'>
                 <input
-                  name='loc-longitude'
+                  name='longitude'
                   type='number'
                   className='input w-full'
                   placeholder='Längengrad (Longitude)'
                   disabled={locationform.pending}
+                  min='5'
+                  max='16'
                 />
                 <input
-                  name='loc-latitude'
+                  name='latitude'
                   type='number'
                   className='input w-full'
                   placeholder='Breitengrad (Latitude)'
+                  min='47'
+                  max='51'
                   disabled={locationform.pending}
                 />
               </div>
