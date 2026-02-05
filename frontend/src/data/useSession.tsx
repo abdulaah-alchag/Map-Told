@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
-import { type SessionContextType, SessionCtx } from '@data';
+import { SessionCtx } from '@data';
+import { type SessionContextType } from '@types';
 
 export const useSession = (): SessionContextType => {
   const ctx = useContext(SessionCtx);

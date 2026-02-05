@@ -1,6 +1,6 @@
-import type { LocationFormType } from '@types';
+//import type { LocationFormType } from '@types';
 
-export const validateInputs = (formData: LocationFormType) => {
+export const validateInputs = () => {
   /*
   const { street, house, postalcode, city, latitude, longitude } = formData;
   const newErrors = {};
