@@ -59,7 +59,18 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
         greenAreas
       },
       elevation: { avg: elevationAvg },
-      weather: { temperature: weatherData.hourly.temperature_2m[0] ?? 0 }, // Mocked weather data
+      weather: {
+        time: weatherData.current.time,
+        is_day: weatherData.current.is_day,
+        temperature: weatherData.current.temperature_2m,
+        humidity: weatherData.current.relative_humidity_2m,
+        wind_speed: weatherData.current.wind_speed_10m,
+        precipitation: weatherData.current.precipitation,
+        snowfall: weatherData.current.snowfall,
+        max_temp_next7days: weatherData.daily.temperature_2m_max,
+        min_temp_next7days: weatherData.daily.temperature_2m_min,
+        sunshine_next7days: weatherData.daily.sunshine_duration
+      }, // Mocked weather data
       aiText: 'Sample AI-generated text about the area.' // Mocked AI text
     });
   } catch (error: unknown) {

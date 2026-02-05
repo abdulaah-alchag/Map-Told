@@ -1,43 +1,19 @@
 import { fetchWeatherApi } from 'openmeteo';
+import type { openMeteoDTO } from '#types';
+
 const params = {
   latitude: 0,
   longitude: 0,
-  daily: ['temperature_2m_max', 'temperature_2m_min', 'sunrise', 'sunset', 'sunshine_duration', 'daylight_duration'],
-  hourly: [
-    'temperature_2m',
-    'relative_humidity_2m',
-    'precipitation_probability',
-    'wind_speed_10m',
-    'wind_direction_10m'
-  ],
+  daily: ['temperature_2m_max', 'temperature_2m_min', 'sunshine_duration'],
+  current: ['temperature_2m', 'relative_humidity_2m', 'precipitation', 'wind_speed_10m', 'snowfall', 'is_day'],
   timezone: ''
-};
-
-export type openMetroDTO = {
-  hourly: {
-    time: Date[];
-    temperature_2m: number[];
-    relative_humidity_2m: number[];
-    precipitation_probability: number[];
-    wind_speed_10m: number[];
-    wind_direction_10m: number[];
-  };
-  daily: {
-    time: Date[];
-    temperature_2m_max: number[];
-    temperature_2m_min: number[];
-    sunrise: Date[];
-    sunset: Date[];
-    sunshine_duration: number[];
-    daylight_duration: number[];
-  };
 };
 
 export async function openMeteo(
   latFixed: number,
   lonFixed: number,
   timezoneFixed = 'Europe/Berlin'
-): Promise<openMetroDTO> {
+): Promise<openMeteoDTO> {
   params.latitude = latFixed;
   params.longitude = lonFixed;
   params.timezone = timezoneFixed;
@@ -48,23 +24,21 @@ export async function openMeteo(
   const response = responses[0] as any;
   console.log(responses);
   const utcOffsetSeconds = response.utcOffsetSeconds();
-  const hourly = response.hourly()!;
+  const current = response.current()!;
   const daily = response.daily()!;
   // Define Int64 variables so they can be processed accordingly
   const sunrise = daily.variables(2)!;
   const sunset = daily.variables(3)!;
 
   const weatherData = {
-    hourly: {
-      time: Array.from(
-        { length: (Number(hourly.timeEnd()) - Number(hourly.time())) / hourly.interval() },
-        (_, i) => new Date((Number(hourly.time()) + i * hourly.interval() + utcOffsetSeconds) * 1000)
-      ),
-      temperature_2m: hourly.variables(0)!.valuesArray(),
-      relative_humidity_2m: hourly.variables(1)!.valuesArray(),
-      precipitation_probability: hourly.variables(2)!.valuesArray(),
-      wind_speed_10m: hourly.variables(3)!.valuesArray(),
-      wind_direction_10m: hourly.variables(4)!.valuesArray()
+    current: {
+      time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000),
+      temperature_2m: current.variables(0)!.value(),
+      relative_humidity_2m: current.variables(1)!.value(),
+      precipitation: current.variables(2)!.value(),
+      wind_speed_10m: current.variables(3)!.value(),
+      snowfall: current.variables(4)!.value(),
+      is_day: current.variables(5)!.value()
     },
     daily: {
       time: Array.from(
@@ -74,16 +48,8 @@ export async function openMeteo(
       temperature_2m_max: daily.variables(0)!.valuesArray(),
       temperature_2m_min: daily.variables(1)!.valuesArray(),
       // Map Int64 values to according structure
-      sunrise: [...Array(sunrise.valuesInt64Length())].map(
-        (_, i) => new Date((Number(sunrise.valuesInt64(i)) + utcOffsetSeconds) * 1000)
-      ),
-      // Map Int64 values to according structure
-      sunset: [...Array(sunset.valuesInt64Length())].map(
-        (_, i) => new Date((Number(sunset.valuesInt64(i)) + utcOffsetSeconds) * 1000)
-      ),
-      sunshine_duration: daily.variables(4)!.valuesArray(),
-      daylight_duration: daily.variables(5)!.valuesArray()
+      sunshine_duration: daily.variables(2)!.valuesArray()
     }
   };
-  return weatherData as openMetroDTO;
+  return weatherData as openMeteoDTO;
 }
