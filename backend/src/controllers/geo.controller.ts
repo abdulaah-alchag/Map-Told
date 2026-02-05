@@ -1,7 +1,7 @@
-import { fetchOsmData, fetchElevation } from '#services';
-import type { ZoneInputDTO, GeoFeature, GeoResponseDTO, OsmElements, OsmElement } from '#types';
+import { fetchOsmData, fetchElevation, generateAiText } from '#services';
+import type { ZoneInputDTO, GeoResponseDTO } from '#types';
 import { type RequestHandler } from 'express';
-import { getBBox } from '#utils';
+import { getBBox, getLayers } from '#utils';
 import { Zone } from '#models';
 
 /**
@@ -25,29 +25,27 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
 
     const osmPromise = fetchOsmData(bbox);
     const elevationPromise = existingZone
-      ? Promise.resolve(existingZone.stats?.avgElevation ?? 0)
+      ? Promise.resolve(existingZone.stats?.elevation ?? 0)
       : fetchElevation(latFixed, lonFixed);
 
-    const [osmData, elevationAvg] = await Promise.all([osmPromise, elevationPromise]);
+    const [osmData, elevation] = await Promise.all([osmPromise, elevationPromise]);
 
     //Extract layers from OSM data
-    const { buildings, roads, greenAreas } = getLayers(osmData);
+    const { buildings, roads, green, water } = getLayers(osmData);
 
-    // Save zone data if it doesn't exist
+    // Generate AI text and save zone data if it doesn't exist
     let zone = existingZone;
     if (!zone) {
-      zone = new Zone();
-      zone.bbox = bbox;
-      zone.coordinates = { lat: latFixed, lon: lonFixed };
-      zone.stats = {
+      const coordinates = { lat: latFixed, lon: lonFixed };
+      const stats = {
         buildingCount: buildings.features.length,
-        parkCount: greenAreas.features.length,
+        greenCount: green.features.length,
         roadCount: roads.features.length,
-        avgElevation: elevationAvg
+        waterCount: water.features.length,
+        elevation: elevation
       };
-      zone.aiText = 'Sample AI-generated text about the area.';
-
-      await zone.save();
+      const aiText = await generateAiText(stats);
+      zone = await Zone.create({ bbox, coordinates, stats, aiText });
     }
 
     res.json({
@@ -55,11 +53,12 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
       layers: {
         buildings,
         roads,
-        greenAreas
+        green,
+        water
       },
-      elevation: { avg: elevationAvg },
+      elevation: elevation,
       weather: { temperature: 22 }, // Mocked weather data
-      aiText: 'Sample AI-generated text about the area.' // Mocked AI text
+      aiText: zone.aiText ?? null
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -68,44 +67,3 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
     throw new Error('Unknown error occurred while fetching geographical data.');
   }
 };
-
-/** Extract layers from OSM data in GEOJson format */
-function getLayers(osmData: OsmElements) {
-  // Filter and transform OSM data into GeoJSON feature collections
-  const features = osmData.elements.filter((el: OsmElement) => el.type === 'way' && el.geometry);
-  const layers = {
-    buildings: { type: 'FeatureCollection', features: [] as GeoFeature[] },
-    roads: { type: 'FeatureCollection', features: [] as GeoFeature[] },
-    greenAreas: { type: 'FeatureCollection', features: [] as GeoFeature[] }
-  };
-
-  features.forEach((f: any) => {
-    const isBuilding = f.tags && f.tags.building;
-    const isPark = f.tags && f.tags.leisure === 'park';
-
-    const geometryType = isBuilding || isPark ? 'Polygon' : 'LineString';
-
-    const newFeature = {
-      type: 'Feature',
-      geometry: { type: geometryType, coordinates: f.geometry.map((point: any) => [point.lon, point.lat]) },
-      properties: f.tags || {}
-    };
-
-    if (isBuilding) {
-      layers.buildings.features.push(newFeature);
-    } else if (isPark) {
-      layers.greenAreas.features.push(newFeature);
-    } else {
-      layers.roads.features.push(newFeature);
-    }
-    return layers;
-  });
-
-  const { buildings, roads, greenAreas } = layers;
-
-  return {
-    buildings,
-    roads,
-    greenAreas
-  };
-}
