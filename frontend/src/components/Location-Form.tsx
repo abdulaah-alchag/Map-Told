@@ -184,6 +184,7 @@ export const LocationForm = () => {
                   disabled={locationform.pending}
                   min='5'
                   max='16'
+                  step='any'
                 />
                 <input
                   name='latitude'
@@ -193,6 +194,7 @@ export const LocationForm = () => {
                   min='47'
                   max='51'
                   disabled={locationform.pending}
+                  step='any'
                 />
               </div>
             )}
