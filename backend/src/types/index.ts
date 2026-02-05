@@ -5,7 +5,8 @@ import type {
   geoFeatureSchema,
   osmElementsSchema,
   opentopodataSchema,
-  osmElementSchema
+  osmElementSchema,
+  openMeteoSchema
 } from '#schemas';
 
 export type ZoneInputDTO = z.infer<typeof zoneInputSchema>;
@@ -19,3 +20,5 @@ export type OsmElement = z.infer<typeof osmElementSchema>;
 export type OsmElements = z.infer<typeof osmElementsSchema>;
 
 export type Opentopodata = z.infer<typeof opentopodataSchema>;
+
+export type openMeteoDTO = z.infer<typeof openMeteoSchema>;

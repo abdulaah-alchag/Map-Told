@@ -1,4 +1,4 @@
-import { fetchOsmData, fetchElevation } from '#services';
+import { fetchOsmData, fetchElevation, openMeteo } from '#services';
 import type { ZoneInputDTO, GeoFeature, GeoResponseDTO, OsmElements, OsmElement } from '#types';
 import { type RequestHandler } from 'express';
 import { getBBox } from '#utils';
@@ -27,8 +27,9 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
     const elevationPromise = existingZone
       ? Promise.resolve(existingZone.stats?.avgElevation ?? 0)
       : fetchElevation(latFixed, lonFixed);
+    const openMeteoPromise = openMeteo(latFixed, lonFixed);
 
-    const [osmData, elevationAvg] = await Promise.all([osmPromise, elevationPromise]);
+    const [osmData, elevationAvg, weatherData] = await Promise.all([osmPromise, elevationPromise, openMeteoPromise]);
 
     //Extract layers from OSM data
     const { buildings, roads, greenAreas } = getLayers(osmData);
@@ -58,7 +59,18 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
         greenAreas
       },
       elevation: { avg: elevationAvg },
-      weather: { temperature: 22 }, // Mocked weather data
+      weather: {
+        time: weatherData.current.time,
+        is_day: weatherData.current.is_day,
+        temperature: weatherData.current.temperature_2m,
+        humidity: weatherData.current.relative_humidity_2m,
+        wind_speed: weatherData.current.wind_speed_10m,
+        precipitation: weatherData.current.precipitation,
+        snowfall: weatherData.current.snowfall,
+        max_temp_next7days: weatherData.daily.temperature_2m_max,
+        min_temp_next7days: weatherData.daily.temperature_2m_min,
+        sunshine_next7days: weatherData.daily.sunshine_duration
+      }, // Mocked weather data
       aiText: 'Sample AI-generated text about the area.' // Mocked AI text
     });
   } catch (error: unknown) {
