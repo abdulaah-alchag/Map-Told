@@ -16,23 +16,11 @@ const locationFormReducer = (
   LocationFormActionSchema.parse(action);
 
   switch (action.type) {
-    case 'SET_PENDING':
-      return { ...state, pending: action.payload };
-
     case 'SET_MASK':
       return { ...state, mask: action.payload };
 
-    case 'SET_ADDRESS':
-      return {
-        ...state,
-        data: { ...state.data, address: action.payload },
-      };
-
-    case 'SET_COORDINATES':
-      return {
-        ...state,
-        data: { ...state.data, coordinates: action.payload },
-      };
+    case 'UPDATE_DATA':
+      return { ...state, inputs: action.payload };
 
     default:
       return state;
@@ -41,20 +29,16 @@ const locationFormReducer = (
 
 const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [locationform, dispatchLocationForm] = useReducer(locationFormReducer, {
-    pending: false,
-    data: {
-      address: {
-        street: null,
-        house: null,
-        city: null,
-        postalcode: null,
-      },
-      coordinates: {
-        latitude: null,
-        longitude: null,
-      },
-    },
     mask: 'address',
+    inputs: {
+      street: null,
+      house: null,
+      city: null,
+      postcode: null,
+      latitude: null,
+      longitude: null,
+    },
+    pending: false,
   });
 
   return (
