@@ -3,6 +3,7 @@ import { LuLoader, LuSearch } from 'react-icons/lu';
 
 import { useSession } from '@data';
 import type { LocationFormInputsType } from '@types';
+import { sleep } from '@utils';
 
 export const LocationForm = () => {
   const { locationform, dispatchLocationForm } = useSession();
@@ -17,6 +18,22 @@ export const LocationForm = () => {
     dispatchLocationForm({ type: 'UPDATE_DATA', payload: newInputs });
   };
 
+  const submitAction = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatchLocationForm({ type: 'SET_PENDING', payload: true });
+
+    if (locationform.mask === 'address') {
+      console.log('TODO: convert address to coordinates');
+    }
+
+    await sleep(2000);
+
+    console.log('Submitted: ');
+
+    dispatchLocationForm({ type: 'SET_SUCCESS', payload: true });
+    dispatchLocationForm({ type: 'SET_PENDING', payload: false });
+  };
+
   return (
     <section
       id='Location-Form'
@@ -27,6 +44,7 @@ export const LocationForm = () => {
       </div>
 
       <div id='Location-Form-Container' className=''>
+        {/* MASK FORM BUTTONS ============================================= */}
         <div id='Location-Form-Control-Buttons' className='mb-5 grid grid-cols-2'>
           <button
             type='button'
@@ -59,8 +77,9 @@ export const LocationForm = () => {
               'Punkt eingeben:'
             )}
           </h2>
-
-          <form className='grid gap-2'>
+          {/* START FORM ================================================== */}
+          <form onSubmit={submitAction} className='grid gap-2'>
+            {/* ADDRESS FORM ============================================== */}
             {locationform.mask === 'address' && (
               <>
                 <div className='grid grid-cols-[75%_1fr] gap-2'>
@@ -105,7 +124,7 @@ export const LocationForm = () => {
                 </div>
               </>
             )}
-
+            {/* COORDINATES FORM ========================================== */}
             {locationform.mask === 'coordinates' && (
               <div className='grid gap-2'>
                 <input
@@ -136,7 +155,7 @@ export const LocationForm = () => {
             )}
 
             <div id='Errors-Container' className='min-h-20'></div>
-
+            {/* SUBMIT BUTTON ============================================= */}
             <button
               className={`btn btn-secondary m-auto mt-2 w-full text-white ${locationform.pending ? 'bg-mt-color-11 cursor-not-allowed' : 'bg-mt-color-31'}`}
               disabled={locationform.pending}

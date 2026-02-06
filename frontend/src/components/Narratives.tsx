@@ -4,7 +4,7 @@ export const Narratives = ({ visible }: { visible: boolean }) => {
   const { locationform } = useSession();
 
   return (
-    <div id='Narratives' className={`h-200 md:h-280 lg:h-350 ${!visible ? 'hidden' : ''}`}>
+    <div id='Narratives' className={`h-200 md:h-280 lg:h-350 ${visible ? '' : 'hidden'}`}>
       <div id='Narrative-1' className='grid h-1/3 grid-cols-2'>
         <div
           className={`flex items-center justify-center p-5 text-center ${locationform.mask === 'address' ? `bg-mt-color-20` : `bg-mt-color-30`}`}

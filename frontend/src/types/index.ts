@@ -24,6 +24,7 @@ export const LocationFormSchema = z.object({
   mask: LocationFormMaskSchema,
   inputs: LocationFormInputsSchema,
   pending: z.boolean(),
+  success: z.boolean(),
 });
 
 export const LocationFormActionSchema = z.discriminatedUnion('type', [
@@ -34,6 +35,14 @@ export const LocationFormActionSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('UPDATE_DATA'),
     payload: LocationFormInputsSchema,
+  }),
+  z.object({
+    type: z.literal('SET_PENDING'),
+    payload: z.boolean(),
+  }),
+  z.object({
+    type: z.literal('SET_SUCCESS'),
+    payload: z.boolean(),
   }),
 ]);
 

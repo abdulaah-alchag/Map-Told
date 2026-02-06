@@ -22,8 +22,11 @@ const locationFormReducer = (
     case 'UPDATE_DATA':
       return { ...state, inputs: action.payload };
 
-    default:
-      return state;
+    case 'SET_PENDING':
+      return { ...state, pending: action.payload };
+
+    case 'SET_SUCCESS':
+      return { ...state, success: action.payload };
   }
 };
 
@@ -39,6 +42,7 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
       longitude: null,
     },
     pending: false,
+    success: false,
   });
 
   return (

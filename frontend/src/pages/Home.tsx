@@ -1,18 +1,21 @@
 import { LuSun } from 'react-icons/lu';
 
+import { useSession } from '@/data';
 import { Hero, LeafletMap, LocationForm, Narratives } from '@components';
 
 export const Home = () => {
+  const { locationform } = useSession();
+
   return (
     <>
       <title>MapTold</title>
       <main>
         <Hero />
         <LocationForm />
-        <Narratives visible={true} />
+        <Narratives visible={!locationform.success} />
 
         {/* RESPONSE SECTION =========== */}
-        <div id='Response' className='hidden'>
+        <div id='Response' className={locationform.success ? '' : 'hidden'}>
           {/* MAP and FILTER =========== */}
           <div id='Map-Section' className='bg-mt-color-1 h-full'>
             <div className='px-5 pt-15 pb-5 lg:px-20'>
