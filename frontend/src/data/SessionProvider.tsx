@@ -1,8 +1,43 @@
 import { type ReactNode, createContext, useReducer } from 'react';
 
-import type { LocationFormActionType, LocationFormType, SessionContextType } from '@types';
+import {
+  LocationFormActionSchema,
+  type LocationFormActionType,
+  type LocationFormType,
+  type SessionContextType,
+} from '@types';
 
 const SessionCtx = createContext<SessionContextType | undefined>(undefined);
+
+const locationFormReducer = (
+  state: LocationFormType,
+  action: LocationFormActionType,
+): LocationFormType => {
+  LocationFormActionSchema.parse(action);
+
+  switch (action.type) {
+    case 'SET_PENDING':
+      return { ...state, pending: action.payload };
+
+    case 'SET_MASK':
+      return { ...state, mask: action.payload };
+
+    case 'SET_ADDRESS':
+      return {
+        ...state,
+        data: { ...state.data, address: action.payload },
+      };
+
+    case 'SET_COORDINATES':
+      return {
+        ...state,
+        data: { ...state.data, coordinates: action.payload },
+      };
+
+    default:
+      return state;
+  }
+};
 
 const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [locationform, dispatchLocationForm] = useReducer(locationFormReducer, {
@@ -19,7 +54,7 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
         longitude: null,
       },
     },
-    input: 'address',
+    mask: 'address',
   });
 
   return (
@@ -30,31 +65,3 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export { SessionCtx, SessionProvider };
-
-function locationFormReducer(
-  locationform: LocationFormType,
-  action: LocationFormActionType,
-): LocationFormType {
-  const { type } = action;
-
-  switch (type) {
-    case 'SET_PENDING': {
-      return { ...locationform, pending: action.payload };
-      break;
-    }
-    case 'SET_INPUT': {
-      return { ...locationform, input: action.payload };
-      break;
-    }
-    case 'SET_ADDRESS': {
-      return { ...locationform, data: { ...locationform.data, address: action.payload } };
-      break;
-    }
-    case 'SET_COORDINATES': {
-      return { ...locationform, data: { ...locationform.data, coordinates: action.payload } };
-      break;
-    }
-    default:
-      return locationform;
-  }
-}

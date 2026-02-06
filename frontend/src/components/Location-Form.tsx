@@ -11,7 +11,7 @@ export const LocationForm = () => {
     const btnName = e.currentTarget.name;
 
     if (btnName === 'address') {
-      await dispatchLocationForm({ type: 'SET_INPUT', payload: btnName });
+      await dispatchLocationForm({ type: 'SET_MASK', payload: btnName });
 
       const { address } = locationform.data;
       const streetEl = document.querySelector('input[name="street"]') as HTMLInputElement | null;
@@ -28,7 +28,7 @@ export const LocationForm = () => {
     }
 
     if (btnName === 'coordinates') {
-      await dispatchLocationForm({ type: 'SET_INPUT', payload: btnName });
+      await dispatchLocationForm({ type: 'SET_MASK', payload: btnName });
 
       const { coordinates } = locationform.data;
       const latEl = document.querySelector('input[name="latitude"]') as HTMLInputElement | null;
@@ -42,7 +42,7 @@ export const LocationForm = () => {
     const form = e.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
 
-    if (locationform.input === 'address') {
+    if (locationform.mask === 'address') {
       dispatchLocationForm({
         type: 'SET_ADDRESS',
         payload: {
@@ -60,7 +60,7 @@ export const LocationForm = () => {
       }
     }
 
-    if (locationform.input === 'coordinates') {
+    if (locationform.mask === 'coordinates') {
       dispatchLocationForm({
         type: 'SET_COORDINATES',
         payload: {
@@ -81,7 +81,7 @@ export const LocationForm = () => {
     e.preventDefault();
     dispatchLocationForm({ type: 'SET_PENDING', payload: true });
 
-    if (locationform.input === 'address') {
+    if (locationform.mask === 'address') {
       console.log('TODO: convert address to coordinates');
     }
 
@@ -94,7 +94,7 @@ export const LocationForm = () => {
   return (
     <section
       id='Location-Form'
-      className={`grid lg:grid-cols-2 ${locationform.pending ? 'bg-mt-color-13' : locationform.input === 'address' ? 'bg-mt-color-4' : 'bg-mt-color-20'}`}
+      className={`grid lg:grid-cols-2 ${locationform.pending ? 'bg-mt-color-13' : locationform.mask === 'address' ? 'bg-mt-color-4' : 'bg-mt-color-20'}`}
     >
       <div id='Location-Form-Image' className='bg-mt-color-5'>
         <div className='form-beside-image h-full w-full'></div>
@@ -104,7 +104,7 @@ export const LocationForm = () => {
         <div id='Location-Form-Control-Buttons' className='mb-5 grid grid-cols-2'>
           <button
             type='button'
-            className={`btn btn-location-form-control ${locationform.pending ? 'bg-green-100' : locationform.input === 'address' && 'bg-purple-100'}`}
+            className={`btn btn-location-form-control ${locationform.pending ? 'bg-green-100' : locationform.mask === 'address' && 'bg-purple-100'}`}
             disabled={locationform.pending}
             onClick={controlFormTo}
             name='address'
@@ -113,7 +113,7 @@ export const LocationForm = () => {
           </button>
           <button
             type='button'
-            className={`btn btn-location-form-control ${locationform.pending ? 'bg-green-100' : locationform.input === 'coordinates' && 'bg-yellow-100'}`}
+            className={`btn btn-location-form-control ${locationform.pending ? 'bg-green-100' : locationform.mask === 'coordinates' && 'bg-yellow-100'}`}
             disabled={locationform.pending}
             onClick={controlFormTo}
             name='coordinates'
@@ -129,7 +129,7 @@ export const LocationForm = () => {
           <h2>
             {locationform.pending ? (
               <span className='text-green-600'>Die Suche läuft...</span>
-            ) : locationform.input === 'address' ? (
+            ) : locationform.mask === 'address' ? (
               'Ort eingeben:'
             ) : (
               'Punkt eingeben:'
@@ -137,7 +137,7 @@ export const LocationForm = () => {
           </h2>
 
           <form onSubmit={submitAction} onChange={handleInputChange} className='grid gap-2'>
-            {locationform.input === 'address' && (
+            {locationform.mask === 'address' && (
               <>
                 <div className='grid grid-cols-[75%_1fr] gap-2'>
                   <input
@@ -174,7 +174,7 @@ export const LocationForm = () => {
               </>
             )}
 
-            {locationform.input === 'coordinates' && (
+            {locationform.mask === 'coordinates' && (
               <div className='grid gap-2'>
                 <input
                   name='longitude'
