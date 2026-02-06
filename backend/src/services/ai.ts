@@ -16,8 +16,8 @@ type PromptBody = z.infer<typeof promptBodySchema>;
 /**
  * Generates a narrative description of an area using AI.
  */
-export async function generateAiText(data: PromptBody): Promise<string> {
-  const input = promptBodySchema.parse(data);
+export async function generateAiText(stats: PromptBody): Promise<string> {
+  const input = promptBodySchema.parse(stats);
 
   // Compute numeric features for AI input
   const features = areaFeatures(input);
@@ -31,12 +31,27 @@ export async function generateAiText(data: PromptBody): Promise<string> {
       {
         role: 'system',
         content: `
-          You are an expert who interprets maps.
-          Your mission: Describe the personality of the area using a welcoming and narrative tone.
-          Context:
-            - If the green/building ratio is high, it describes a rural area.
-            - If the number of buildings and streets is predominant, it describes an urban area.
-          Provide your output strictly as JSON matching the SummarySchema.
+          You interpret geographic data.
+
+          TASK:
+          Write a short, welcoming description of a zone based only on numeric features.
+
+          INTERPRETATION:
+          - High greenAreaToBuildingRatio → rural or nature-focused
+          - High roadToBuildingRatio + high buildingCount → urban
+          - Balanced ratios → suburban or mixed
+          - Very low values → sparse or undeveloped
+
+          RULES:
+          - Use only the provided data
+          - Do not invent details or landmarks
+          - Treat zero or missing values as unknown
+          - Prefer derived ratios over raw counts
+
+          OUTPUT:
+          - Valid JSON only
+          - Must match SummarySchema exactly
+          - Single short paragraph
         `
       },
       {
@@ -45,7 +60,7 @@ export async function generateAiText(data: PromptBody): Promise<string> {
       }
     ],
     text: { format: zodTextFormat(aiSummarySchema, 'SummarySchema') },
-    temperature: 0,
+    temperature: 0.1,
     max_output_tokens: 150
   });
 
