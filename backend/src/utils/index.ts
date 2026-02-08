@@ -1,3 +1,3 @@
-export * from './bbox';
-export * from './layers';
-export * from './stats';
+export * from './bbox.ts';
+export * from './layers.ts';
+export * from './stats.ts';
