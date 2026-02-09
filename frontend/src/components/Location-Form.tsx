@@ -23,6 +23,8 @@ export const LocationForm = () => {
 
     dispatchLocationForm({ type: 'SET_PENDING', payload: true });
 
+    let coordinates = {};
+
     if (locationform.mask === 'address') {
       const address = [];
       if (locationform.inputs.street) address.push(locationform.inputs.street);
@@ -33,7 +35,7 @@ export const LocationForm = () => {
       const params = `${address.toString().replace(/[\s,]+/g, '+')}&limit=1`;
       const url = `https://photon.komoot.io/api/?q=${params}`;
 
-      fetch(url)
+      await fetch(url)
         .then((res) => {
           if (!res.ok) {
             throw new Error(`HTTP error ${res.status}`);
@@ -59,13 +61,38 @@ export const LocationForm = () => {
             longitude: lon,
           };
           dispatchLocationForm({ type: 'UPDATE_DATA', payload: newFormData });
+
+          coordinates = {
+            latitide: lat,
+            longitude: lon,
+          };
         })
         .catch((err) => {
           console.error('Geocoding failed:', err.message);
         });
     }
 
-    console.log('Submitted: ');
+    if (locationform.mask === 'coordinates') {
+      coordinates = {
+        latitide: locationform.inputs.latitude,
+        longitude: locationform.inputs.longitude,
+      };
+    }
+
+    try {
+      const response = await fetch('https://map-told-api.onrender.com/geo/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coordinates }),
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      console.log('API response:', data);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    }
 
     dispatchLocationForm({ type: 'SET_SUCCESS', payload: true });
     dispatchLocationForm({ type: 'SET_PENDING', payload: false });
