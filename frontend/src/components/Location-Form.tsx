@@ -3,7 +3,7 @@ import { LuLoader, LuSearch } from 'react-icons/lu';
 
 import { useSession } from '@data';
 import type { LocationFormInputsType } from '@types';
-import { sleep } from '@utils';
+import { scrollToElementID, sleep } from '@utils';
 
 export const LocationForm = () => {
   const { locationform, dispatchLocationForm } = useSession();
@@ -20,18 +20,84 @@ export const LocationForm = () => {
 
   const submitAction = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     dispatchLocationForm({ type: 'SET_PENDING', payload: true });
 
+    let coordinates = {};
+
     if (locationform.mask === 'address') {
-      console.log('TODO: convert address to coordinates');
+      const address = [];
+      if (locationform.inputs.street) address.push(locationform.inputs.street);
+      if (locationform.inputs.house) address.push(locationform.inputs.house);
+      if (locationform.inputs.postcode) address.push(locationform.inputs.postcode);
+      if (locationform.inputs.city) address.push(locationform.inputs.city);
+
+      const params = `${address.toString().replace(/[\s,]+/g, '+')}&limit=1`;
+      const url = `https://photon.komoot.io/api/?q=${params}`;
+
+      await fetch(url)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error ${res.status}`);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (
+            !data ||
+            !Array.isArray(data.features) ||
+            data.features.length === 0 ||
+            !data.features[0]?.geometry?.coordinates
+          ) {
+            throw new Error('No coordinates found for this address');
+          }
+          const [lon, lat] = data.features[0].geometry.coordinates;
+          const newFormData = {
+            street: locationform.inputs.street,
+            house: locationform.inputs.house,
+            city: locationform.inputs.city,
+            postcode: locationform.inputs.postcode,
+            latitude: lat,
+            longitude: lon,
+          };
+          dispatchLocationForm({ type: 'UPDATE_DATA', payload: newFormData });
+
+          coordinates = {
+            latitide: lat,
+            longitude: lon,
+          };
+        })
+        .catch((err) => {
+          console.error('Geocoding failed:', err.message);
+        });
     }
 
-    await sleep(2000);
+    if (locationform.mask === 'coordinates') {
+      coordinates = {
+        latitide: locationform.inputs.latitude,
+        longitude: locationform.inputs.longitude,
+      };
+    }
 
-    console.log('Submitted: ');
+    try {
+      const response = await fetch('https://map-told-api.onrender.com/geo/data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coordinates }),
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      console.log('API response:', data);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    }
 
     dispatchLocationForm({ type: 'SET_SUCCESS', payload: true });
     dispatchLocationForm({ type: 'SET_PENDING', payload: false });
+    await sleep(100);
+    scrollToElementID('Response');
   };
 
   return (
@@ -132,8 +198,6 @@ export const LocationForm = () => {
                   type='number'
                   className='input w-full'
                   placeholder='Längengrad (Longitude)'
-                  min={5}
-                  max={16}
                   step={0.0001}
                   disabled={locationform.pending}
                   value={locationform.inputs.longitude ?? ''}
@@ -144,8 +208,6 @@ export const LocationForm = () => {
                   type='number'
                   className='input w-full'
                   placeholder='Breitengrad (Latitude)'
-                  min={47}
-                  max={51}
                   step={0.0001}
                   disabled={locationform.pending}
                   value={locationform.inputs.latitude ?? ''}
@@ -154,7 +216,28 @@ export const LocationForm = () => {
               </div>
             )}
 
-            <div id='Errors-Container' className='min-h-20'></div>
+            <div id='Errors-Container' className='min-h-20'>
+              <ul className='list-disc p-2 px-6'>
+                {/* locationform.mask === 'address' && (
+                  <>
+                    {errors.street && <li className='form-error'>Bitte Straße eingeben.</li>}
+                    {errors.house && <li className='form-error'>Bitte Hausnummer eingeben.</li>}
+                    {errors.postcode && <li className='form-error'>Bitte PLZ eingeben.</li>}
+                    {errors.city && <li className='form-error'>Bitte Stadt eingeben.</li>}
+                  </>
+                )}
+                {locationform.mask === 'coordinates' && (
+                  <>
+                    {errors.longitude && (
+                      <li className='form-error'>Längengrad zwischen 5 und 16 eingeben.</li>
+                    )}
+                    {errors.latitude && (
+                      <li className='form-error'>Breitengrad zwischen 47 und 51 eingeben.</li>
+                    )}
+                  </>
+                )*/}
+              </ul>
+            </div>
             {/* SUBMIT BUTTON ============================================= */}
             <button
               className={`btn btn-secondary m-auto mt-2 w-full text-white ${locationform.pending ? 'bg-mt-color-11 cursor-not-allowed' : 'bg-mt-color-31'}`}

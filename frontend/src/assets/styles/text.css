@@ -39,3 +39,7 @@ h3 {
 h4 {
   @apply font-A pt-4 pb-2 text-lg leading-normal font-semibold;
 }
+
+.form-error {
+  @apply text-xs text-orange-700;
+}
