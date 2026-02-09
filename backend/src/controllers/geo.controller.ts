@@ -1,4 +1,4 @@
-import { fetchOsmData, fetchElevation, generateAiText, openMeteo } from '#services';
+import { fetchOsmData, fetchElevation, generateGoogleAiText, openMeteo } from '#services';
 import type { ZoneInputDTO, GeoResponseDTO } from '#types';
 import { type RequestHandler } from 'express';
 import { calculateZoneStats, getBBox, getLayers } from '#utils';
@@ -40,7 +40,7 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
 
       const stats = calculateZoneStats({ buildings, roads, green, water }, bbox);
 
-      const aiText = await generateAiText({
+      const aiText = await generateGoogleAiText({
         ...stats,
         elevation,
         temperature: weatherData.current.temperature_2m,

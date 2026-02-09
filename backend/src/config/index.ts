@@ -5,7 +5,8 @@ const envSchema = z.object({
   DB_NAME: z.string(),
   CLIENT_BASE_URL: z.url().default('http://localhost:5173'),
   OPENAI_API_KEY: z.string(),
-  OPENAI_MODEL: z.string()
+  OPENAI_MODEL: z.string(),
+  GEMINI_API_KEY: z.string()
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -15,4 +16,4 @@ if (!parsedEnv.success) {
   process.exit(1);
 }
 
-export const { MONGO_URI, DB_NAME, CLIENT_BASE_URL, OPENAI_API_KEY, OPENAI_MODEL } = parsedEnv.data;
+export const { MONGO_URI, DB_NAME, CLIENT_BASE_URL, OPENAI_API_KEY, OPENAI_MODEL, GEMINI_API_KEY } = parsedEnv.data;
