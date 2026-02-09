@@ -24,8 +24,8 @@ export const LocationForm = () => {
     dispatchLocationForm({ type: 'SET_PENDING', payload: true });
 
     let coordinates = {};
-
     if (locationform.mask === 'address') {
+      /* Conversion address to coordninates */
       const address = [];
       if (locationform.inputs.street) address.push(locationform.inputs.street);
       if (locationform.inputs.house) address.push(locationform.inputs.house);
@@ -63,22 +63,22 @@ export const LocationForm = () => {
           dispatchLocationForm({ type: 'UPDATE_DATA', payload: newFormData });
 
           coordinates = {
-            latitide: lat,
-            longitude: lon,
+            lat: lat,
+            lon: lon,
           };
         })
         .catch((err) => {
           console.error('Geocoding failed:', err.message);
         });
     }
-
     if (locationform.mask === 'coordinates') {
       coordinates = {
-        latitide: locationform.inputs.latitude,
-        longitude: locationform.inputs.longitude,
+        lat: locationform.inputs.latitude,
+        lon: locationform.inputs.longitude,
       };
     }
 
+    /* Request to our backend */
     try {
       const response = await fetch('https://map-told-api.onrender.com/geo/data', {
         method: 'POST',
