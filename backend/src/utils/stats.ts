@@ -9,7 +9,8 @@ export function calculateZoneStats(layers: GeoLayers, bbox: [number, number, num
     green = layers.green,
     water = layers.water
   } = layers || {};
-  const buildingCount = buildings.features.length;
+  const buildingsFeatures = buildings?.features || [];
+  const buildingCount = buildingsFeatures.length;
   const buildingDensity = buildingCount / turf.area(turf.bboxPolygon(bbox)) / 1e6; // buildings per km²
 
   const totalRoadLength = roads.features.reduce((sum, f) => {
@@ -31,10 +32,12 @@ export function calculateZoneStats(layers: GeoLayers, bbox: [number, number, num
     .filter(f => f.geometry.type === 'LineString')
     .reduce((sum, f) => sum + turf.length(f, { units: 'kilometers' }), 0);
 
-  const restaurantCount = buildings.features.filter(f => f.properties?.amenity === 'restaurant').length;
-  const fastFoodCount = buildings.features.filter(f => f.properties?.amenity === 'fast_food').length;
-  const cafeCount = buildings.features.filter(f => f.properties?.amenity === 'cafe').length;
-  const supermarketCount = buildings.features.filter(f => f.properties?.shop === 'supermarket').length;
+  const museumCount = buildingsFeatures.filter(f => f.properties?.tourism === 'museum').length;
+  const theaterCount = buildingsFeatures.filter(f => f.properties?.amenity === 'theatre').length;
+  const restaurantCount = buildingsFeatures.filter(f => f.properties?.amenity === 'restaurant').length;
+  const fastFoodCount = buildingsFeatures.filter(f => f.properties?.amenity === 'fast_food').length;
+  const cafeCount = buildingsFeatures.filter(f => f.properties?.amenity === 'cafe').length;
+  const supermarketCount = buildingsFeatures.filter(f => f.properties?.shop === 'supermarket').length;
 
   return {
     buildingDensity,
@@ -42,6 +45,8 @@ export function calculateZoneStats(layers: GeoLayers, bbox: [number, number, num
     greenToBuildingRatio,
     waterAreaKm2,
     riverLengthKm,
+    museumCount,
+    theaterCount,
     restaurantCount,
     fastFoodCount,
     cafeCount,
