@@ -19,8 +19,6 @@ export const getGeoData: RequestHandler<{}, GeoResponseDTO, ZoneInputDTO> = asyn
 
   const bbox = getBBox(latFixed, lonFixed, 1); // 1km radius around the point
 
-  console.log('Calculated BBox:', bbox);
-
   try {
     const existingZone = await Zone.findOne({ coordinates: { lat: latFixed, lon: lonFixed } });
 
