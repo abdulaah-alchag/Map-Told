@@ -63,7 +63,6 @@ export async function generateAiText(stats: PromptBody): Promise<string> {
   });
 
   const parsedData = JSON.parse(response.output_text);
-  console.log('AI Response:', parsedData);
 
   return parsedData.response;
 }
