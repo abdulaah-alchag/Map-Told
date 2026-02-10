@@ -34,7 +34,7 @@ const locationFormReducer = (
 };
 
 const responseDataReducer = (
-  state: ResponseDataType,
+  _state: ResponseDataType,
   action: ResponseDataActionType,
 ): ResponseDataType => {
   ResponseDataActionSchema.parse(action);
