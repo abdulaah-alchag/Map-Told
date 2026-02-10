@@ -17,8 +17,8 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
     /* Container MUST have a height */
     <div className={`z-10 min-h-fit w-full bg-white lg:px-20 lg:pt-10 ${className}`}>
       <MapContainer
-        center={[44.19505, 1.95455]}
-        zoom={13}
+        center={[52.5173885, 13.3951309]}
+        zoom={17}
         scrollWheelZoom={false}
         className='h-full w-full'
       >
@@ -26,15 +26,15 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
-        <Marker position={[44.19505, 1.95455]}>
+        <Marker position={[52.5173885, 13.3951309]}>
           <Popup>MapTold: Your location data starts here.</Popup>
         </Marker>
       </MapContainer>
       <div id='Map-Filter' className='grid h-fit grid-cols-4 gap-3 p-5 lg:px-0'>
-        <button className='btn-mapfilter'>Grünfläche</button>
         <button className='btn-mapfilter'>Gebäude</button>
         <button className='btn-mapfilter'>Strassen</button>
-        <button className='btn-mapfilter'>Toiletten</button>
+        <button className='btn-mapfilter'>Grünfläche</button>
+        <button className='btn-mapfilter'>Gewässer</button>
       </div>
     </div>
   );
