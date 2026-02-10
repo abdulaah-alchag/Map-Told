@@ -6,7 +6,7 @@ import type { LocationFormInputsType } from '@types';
 import { scrollToElementID, sleep } from '@utils';
 
 export const LocationForm = () => {
-  const { locationform, dispatchLocationForm } = useSession();
+  const { locationform, dispatchLocationForm, dispatchResponseData } = useSession();
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.currentTarget;
@@ -93,8 +93,8 @@ export const LocationForm = () => {
       }
 
       const data = await response.json();
-      console.log('API response:', data);
 
+      dispatchResponseData({ type: 'SET_DATA', payload: data });
       dispatchLocationForm({ type: 'SET_SUCCESS', payload: true });
       dispatchLocationForm({ type: 'SET_PENDING', payload: false });
       await sleep(100);

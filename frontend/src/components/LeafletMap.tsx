@@ -4,6 +4,8 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
+import { useSession } from '@data';
+
 const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
@@ -13,11 +15,13 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 export const LeafletMap = ({ className = '' }: { className?: string }) => {
+  const { locationform } = useSession();
+
   return (
     /* Container MUST have a height */
     <div className={`z-10 min-h-fit w-full bg-white lg:px-20 lg:pt-10 ${className}`}>
       <MapContainer
-        center={[52.5173885, 13.3951309]}
+        center={[locationform.inputs.latitude!, locationform.inputs.longitude!]}
         zoom={17}
         scrollWheelZoom={false}
         className='h-full w-full'
@@ -26,7 +30,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
-        <Marker position={[52.5173885, 13.3951309]}>
+        <Marker position={[locationform.inputs.latitude!, locationform.inputs.longitude!]}>
           <Popup>MapTold: Your location data starts here.</Popup>
         </Marker>
       </MapContainer>
