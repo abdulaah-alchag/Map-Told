@@ -1,11 +1,10 @@
 import { getBBox, getLayers } from '#utils';
-import { fetchOsmData, fetchElevation, openMeteo } from '#services';
+import { fetchOsmData, fetchElevation, openMeteo, buildBaseLayersQuery } from '#services';
 import { GoogleGenAI, Type } from '@google/genai';
 import type { Content } from '@google/genai';
 import type { RequestHandler } from 'express';
 import type { aiToolsIncomingPrompt } from '#types';
 import { Zone } from '#models';
-import NodeGeocoder from 'node-geocoder';
 
 // Configure the client
 const ai = new GoogleGenAI({
@@ -142,8 +141,8 @@ export const aiToolsCalling: RequestHandler<any, {}, aiToolsIncomingPrompt> = as
 
     if (functionCall!.name === 'OsmInfo') {
       const bbox = await getBBox(lat, lon, 0.5);
-      const osmData = await fetchOsmData(bbox);
-      const { buildings, roads, green, water } = getLayers(osmData);
+      const osmData = await fetchOsmData(buildBaseLayersQuery(bbox));
+      const { buildings, roads, green, water } = getLayers(osmData.elements);
       const stats = {
         buildingCount: buildings.features.length,
         greenCount: green.features.length,
