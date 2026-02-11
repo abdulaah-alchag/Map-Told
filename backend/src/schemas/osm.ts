@@ -22,7 +22,28 @@ export const osmWaySchema = z.object({
   tags: osmTagsSchema.optional()
 });
 
-export const osmElementSchema = z.discriminatedUnion('type', [osmNodeSchema, osmWaySchema]);
+const osmRelationSchema = z.object({
+  type: z.literal('relation'),
+  id: z.number(),
+  members: z.array(
+    z.object({
+      type: z.enum(['node', 'way', 'relation']),
+      ref: z.number(),
+      role: z.string(),
+      geometry: z
+        .array(
+          z.object({
+            lat: z.number(),
+            lon: z.number()
+          })
+        )
+        .optional()
+    })
+  ),
+  tags: osmTagsSchema.optional()
+});
+
+export const osmElementSchema = z.discriminatedUnion('type', [osmNodeSchema, osmWaySchema, osmRelationSchema]);
 
 export const osmElementsSchema = z.object({
   elements: z.array(osmElementSchema)

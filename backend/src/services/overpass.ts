@@ -3,6 +3,7 @@ import type { BBox, OsmElements, PoiType } from '#types';
 
 /* Fetch OSM data from Overpass API based on a custom query */
 export async function fetchOsmData(query: string): Promise<OsmElements> {
+  // console.log('Fetching OSM data with query:', query);
   const response = await fetch(OVERPASS_API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
@@ -22,13 +23,17 @@ export function buildBaseLayersQuery(bbox: BBox): string {
             (
               way["building"]["building"!~"^(garage|shed|annex)$"](${bboxStr});
               way["highway"]["highway"!~"^(path|footway|cycleway|track|steps)$"](${bboxStr});
-              way["leisure"="park"](${bboxStr});
-              way["landuse"="forest"](${bboxStr});
-              way["waterway"~"^(river|stream)$"](${bboxStr});
+              way["leisure"~"park|garden|playground"](${bboxStr});
+              relation["leisure"~"park|garden|playground"](${bboxStr});
+              way["landuse"~"forest|grass|meadow"](${bboxStr});
+              relation["landuse"~"forest|grass|meadow"](${bboxStr});
+              way["natural"~"wood|scrub|heath"](${bboxStr});
+              relation["natural"~"wood|scrub|heath"](${bboxStr});
+              way["waterway"="river"](${bboxStr});
               way["natural"="water"](${bboxStr});
             );
             
-          out geom qt;`;
+          out geom;`;
 }
 
 /* Build Overpass query for specified POIs based on a bounding box and list of POI types */
