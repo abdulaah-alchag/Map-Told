@@ -3,4 +3,4 @@ export * from './opentopodata.ts';
 export * from './openai.ts';
 export * from './google.ts';
 export * from './openMeteo.ts';
-export * from './aiTool.ts';
+export * from './aiToolsCalling.ts';
