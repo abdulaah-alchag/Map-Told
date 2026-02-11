@@ -9,6 +9,7 @@ import type {
   opentopodataSchema,
   osmElementSchema,
   openMeteoSchema,
+  aiToolsPromptBodySchema,
   promptBodySchema,
   bboxSchema,
   poiSchema
@@ -32,6 +33,7 @@ export type Opentopodata = z.infer<typeof opentopodataSchema>;
 
 export type openMeteoDTO = z.infer<typeof openMeteoSchema>;
 
+export type aiToolsIncomingPrompt = z.infer<typeof aiToolsPromptBodySchema>;
 export type PromptBody = z.infer<typeof promptBodySchema>;
 
 export type BBox = z.infer<typeof bboxSchema>;
