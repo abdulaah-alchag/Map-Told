@@ -13,7 +13,7 @@ export async function generateGoogleAiText(stats: PromptBody): Promise<string> {
     contents: [
       {
         role: 'user',
-        parts: [{ text: prompt }]
+        parts: [{ text: prompt() }]
       },
       {
         role: 'user',
