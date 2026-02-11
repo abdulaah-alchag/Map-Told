@@ -1,60 +1,135 @@
 import { type ReactNode, createContext, useReducer } from 'react';
 
-import type { LocationFormActionType, LocationFormType, SessionContextType } from '@types';
+import {
+  LocationFormActionSchema,
+  type LocationFormActionType,
+  type LocationFormType,
+  ResponseDataActionSchema,
+  type ResponseDataActionType,
+  type ResponseDataType,
+  type SessionContextType,
+} from '@types';
 
 const SessionCtx = createContext<SessionContextType | undefined>(undefined);
 
+const locationFormReducer = (
+  state: LocationFormType,
+  action: LocationFormActionType,
+): LocationFormType => {
+  LocationFormActionSchema.parse(action);
+
+  switch (action.type) {
+    case 'SET_MASK':
+      return { ...state, mask: action.payload };
+
+    case 'UPDATE_DATA':
+      return { ...state, inputs: action.payload };
+
+    case 'SET_PENDING':
+      return { ...state, pending: action.payload };
+
+    case 'SET_SUCCESS':
+      return { ...state, success: action.payload };
+  }
+};
+
+const responseDataReducer = (
+  _state: ResponseDataType,
+  action: ResponseDataActionType,
+): ResponseDataType => {
+  ResponseDataActionSchema.parse(action);
+
+  switch (action.type) {
+    case 'SET_DATA':
+      return action.payload;
+  }
+};
+
 const SessionProvider = ({ children }: { children: ReactNode }) => {
   const [locationform, dispatchLocationForm] = useReducer(locationFormReducer, {
+    mask: 'address',
+    inputs: {
+      street: null,
+      house: null,
+      city: null,
+      postcode: null,
+      latitude: null,
+      longitude: null,
+    },
     pending: false,
-    data: {
-      address: {
-        street: null,
-        house: null,
-        city: null,
-        postalcode: null,
+    success: false,
+  });
+
+  const [responsedata, dispatchResponseData] = useReducer(responseDataReducer, {
+    zoneId: null,
+    aiText: null,
+    elevation: null,
+    layers: {
+      buildings: {
+        type: null,
+        features: [],
       },
-      coordinates: {
-        latitude: null,
-        longitude: null,
+      roads: {
+        type: null,
+        features: [],
+      },
+      green: {
+        type: null,
+        features: [],
+      },
+      water: {
+        type: null,
+        features: [],
       },
     },
-    input: 'address',
+    weather: {
+      time: null,
+      isDay: null,
+      sunshine_next7days: {
+        0: null,
+        1: null,
+        2: null,
+        3: null,
+        4: null,
+        5: null,
+        6: null,
+        7: null,
+      },
+      temperature: null,
+      min_temp_next7days: {
+        0: null,
+        1: null,
+        2: null,
+        3: null,
+        4: null,
+        5: null,
+        6: null,
+        7: null,
+      },
+      max_temp_next7days: {
+        0: null,
+        1: null,
+        2: null,
+        3: null,
+        4: null,
+        5: null,
+        6: null,
+        7: null,
+      },
+      humidity: null,
+      precipitation: null,
+      snowfall: null,
+      wind_speed: null,
+    },
   });
 
   return (
-    <SessionCtx.Provider value={{ locationform, dispatchLocationForm }}>
+    <SessionCtx.Provider
+      value={{ locationform, dispatchLocationForm, responsedata, dispatchResponseData }}
+    >
       {children}
     </SessionCtx.Provider>
   );
 };
 
 export { SessionCtx, SessionProvider };
-
-function locationFormReducer(
-  locationform: LocationFormType,
-  action: LocationFormActionType,
-): LocationFormType {
-  const { type } = action;
-
-  switch (type) {
-    case 'SET_PENDING': {
-      return { ...locationform, pending: action.payload };
-      break;
-    }
-    case 'SET_INPUT': {
-      return { ...locationform, input: action.payload };
-      break;
-    }
-    case 'SET_ADDRESS': {
-      return { ...locationform, data: { ...locationform.data, address: action.payload } };
-      break;
-    }
-    case 'SET_COORDINATES': {
-      return { ...locationform, data: { ...locationform.data, coordinates: action.payload } };
-      break;
-    }
-    default:
-      return locationform;
-  }
-}
