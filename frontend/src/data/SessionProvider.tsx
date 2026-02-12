@@ -42,6 +42,15 @@ const responseDataReducer = (
   switch (action.type) {
     case 'SET_DATA':
       return action.payload;
+
+    case 'UPDATE_LAYERS':
+      return {
+        ..._state,
+        layers: {
+          ..._state.layers,
+          ...action.payload,
+        },
+      };
   }
 };
 
@@ -81,6 +90,7 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
         type: null,
         features: [],
       },
+      pois: [],
     },
     weather: {
       time: null,
