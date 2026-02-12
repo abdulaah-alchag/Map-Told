@@ -56,8 +56,53 @@ export type LocationFormActionType = z.infer<typeof LocationFormActionSchema>;
 /* ───────── Respnse-Data ─────────────── */
 
 // TODO: update schemas before rollout
-export const ResponseDataSchema = z.any();
-export const MapLayerSchema = z.any();
+
+const geoFeatureCollectionsSchema = z.object({
+  type: z.literal('FeatureCollection').nullable(),
+  features: z
+    .array(
+      z.object({
+        type: z.literal('Feature'),
+        geometry: z.object({
+          type: z.enum(['Point', 'LineString', 'Polygon', 'MultiPolygon']),
+          coordinates: z.union([
+            z.tuple([z.number(), z.number()]), // Point
+            z.array(z.tuple([z.number(), z.number()])), // LineString
+            z.array(z.array(z.tuple([z.number(), z.number()]))), // Polygon
+            z.array(z.array(z.array(z.tuple([z.number(), z.number()])))), // MultiPolygon
+          ]),
+        }),
+        properties: z.record(z.string(), z.any()),
+      }),
+    )
+    .optional(),
+});
+
+export const PoisSchema = z.object({
+  restaurant: geoFeatureCollectionsSchema,
+  cafe: geoFeatureCollectionsSchema,
+  museum: geoFeatureCollectionsSchema,
+  theatre: geoFeatureCollectionsSchema,
+  bus_stop: geoFeatureCollectionsSchema,
+});
+
+export const ResponseDataSchema = z.object({
+  zoneId: z.string().nullable(),
+  layers: z.object({
+    buildings: geoFeatureCollectionsSchema,
+    roads: geoFeatureCollectionsSchema,
+    green: geoFeatureCollectionsSchema,
+    water: geoFeatureCollectionsSchema,
+    pois: z.array(PoisSchema).optional(),
+  }),
+
+  elevation: z.number().nullable(),
+  weather: z.record(z.string(), z.any()),
+  aiText: z.string().nullable(),
+});
+
+export const MapLayerSchema = ResponseDataSchema.shape.layers.partial();
+
 export const ResponseDataActionSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('SET_DATA'),

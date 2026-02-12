@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LuLoader, LuSearch } from 'react-icons/lu';
 
 import { useSession } from '@data';
@@ -7,6 +7,7 @@ import { scrollToElementID, sleep } from '@utils';
 
 export const LocationForm = () => {
   const { locationform, dispatchLocationForm, dispatchResponseData } = useSession();
+  const [error, setError] = useState<string | null>();
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.currentTarget;
@@ -89,7 +90,12 @@ export const LocationForm = () => {
 
       if (!response.ok) {
         dispatchLocationForm({ type: 'SET_PENDING', payload: false });
-        throw new Error(`API Request failed! status: ${response.status}`);
+
+        const errorData = await response.json();
+        if (!errorData.error) {
+          throw new Error(errorData.message);
+        }
+        throw new Error(errorData.error);
       }
 
       const data = await response.json();
@@ -100,9 +106,21 @@ export const LocationForm = () => {
       dispatchLocationForm({ type: 'SET_PENDING', payload: false });
       await sleep(100);
       scrollToElementID('Response');
-    } catch (err) {
+    } catch (err: unknown) {
       dispatchLocationForm({ type: 'SET_PENDING', payload: false });
-      throw new Error(`API Fetch error:: ${err}`);
+      const message = (err as { message: string }).message;
+      if (message === 'Failed to fetch OSM data') {
+        setError(
+          `⏳ Die Anfrage hat zu lange gedauert und wurde abgebrochen.
+         🔁 Bitte versuche es in Kürze erneut.`,
+        );
+      } else {
+        setError(message);
+      }
+
+      setTimeout(() => {
+        setError(null);
+      }, 10000);
     }
   };
 
@@ -227,6 +245,9 @@ export const LocationForm = () => {
                 />
               </div>
             )}
+
+            {/* ERROR MESSAGE ============================================= */}
+            {error && <p className='my-2 text-sm text-red-600'>{error} </p>}
 
             {/* SUBMIT BUTTON ============================================= */}
             <button
