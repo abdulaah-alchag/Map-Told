@@ -4,6 +4,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
 import { useMemo, useState } from 'react';
+import { LuBusFront, LuLoader } from 'react-icons/lu';
 import { GeoJSON, MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
 import { useSession } from '@data';
@@ -20,6 +21,32 @@ const DefaultIcon = L.icon({
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
+
+const TheatreIcon = L.icon({
+  iconUrl: 'https://img.icons8.com/color/512w/theatre-mask.png',
+  shadowUrl: iconShadow,
+  iconSize: [30, 30],
+  iconAnchor: [10, 20],
+  popupAnchor: [5, -12],
+});
+
+const MuseumIcon = L.icon({
+  iconUrl:
+    'https://cdn.iconscout.com/icon/free/png-256/free-museum-icon-svg-download-png-2125096.png',
+  shadowUrl: iconShadow,
+  iconSize: [30, 30],
+  iconAnchor: [10, 20],
+  popupAnchor: [5, -12],
+});
+
+const BusStopIcon = L.icon({
+  iconUrl:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/SymbolStrassenbahnhaltestelle.svg/1280px-SymbolStrassenbahnhaltestelle.svg.png',
+  shadowUrl: iconShadow,
+  iconSize: [30, 30],
+  iconAnchor: [10, 20],
+  popupAnchor: [5, -12],
+});
 
 /* -----------------------------
    Types
@@ -62,17 +89,53 @@ function MapLayer({ data, border, fill, weight, opacity, fillOpacity }: MapLayer
 ------------------------------ */
 
 export const LeafletMap = ({ className = '' }: { className?: string }) => {
-  const { locationform, responsedata } = useSession();
+  const { locationform, responsedata, dispatchResponseData } = useSession();
 
-  const [visibleLayers, setVisibleLayers] = useState({
+  const [filterButtons, setFilterButtons] = useState({
     buildings: true,
     roads: true,
     green: true,
     water: true,
+    showMore: 'no',
+    restaurant: false,
+    cafe: false,
+    theatre: false,
+    museum: false,
+    busstop: false,
   });
 
-  const toggleLayer = (key: keyof typeof visibleLayers) => {
-    setVisibleLayers((prev) => ({
+  const showMoreFilter = async () => {
+    setFilterButtons((prev) => ({ ...prev, showMore: 'pending' }));
+    const url =
+      import.meta.env.VITE_API_BASE_URL +
+      '/geo/pois?zoneId=' +
+      responsedata.zoneId +
+      '&types=restaurant,cafe,museum,theatre,bus_stop';
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        setFilterButtons((prev) => ({ ...prev, showMore: 'no' }));
+        throw new Error(`Error! Problems connecting to ${url}`);
+      }
+
+      const data = await res.json();
+      if (!data) {
+        setFilterButtons((prev) => ({ ...prev, showMore: 'no' }));
+        throw new Error(`Error! Problems resolving data from ${url}`);
+      } else {
+        console.log('New Filter: ', data);
+        dispatchResponseData({ type: 'UPDATE_LAYERS', payload: data });
+        setFilterButtons((prev) => ({ ...prev, showMore: 'yes' }));
+      }
+    } catch (error) {
+      setFilterButtons((prev) => ({ ...prev, showMore: 'no' }));
+      throw new Error(`Fetching additional filters failed: ${error}`);
+    }
+  };
+
+  const toggleLayer = (key: keyof typeof filterButtons) => {
+    setFilterButtons((prev) => ({
       ...prev,
       [key]: !prev[key],
     }));
@@ -86,7 +149,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
         center={[locationform.inputs.latitude!, locationform.inputs.longitude!]}
         zoom={16}
         scrollWheelZoom={false}
-        className='h-[600px] w-full'
+        className='h-150 w-full'
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -97,29 +160,29 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           <Popup>Your location</Popup>
         </Marker>
 
-        {visibleLayers.buildings && (
+        {filterButtons.buildings && (
           <MapLayer
             data={layers.buildings}
             border='white'
-            fill='#A2A7B8'
+            fill='#878EA3'
             weight={1}
             opacity={1}
             fillOpacity={0.6}
           />
         )}
 
-        {visibleLayers.roads && (
+        {filterButtons.roads && (
           <MapLayer
             data={layers.roads}
             border='black'
-            fill='#3D3C3C'
-            weight={5}
-            opacity={0.5}
+            fill='#BABABA'
+            weight={6}
+            opacity={0.3}
             fillOpacity={0.9}
           />
         )}
 
-        {visibleLayers.green && (
+        {filterButtons.green && (
           <MapLayer
             data={layers.green}
             border='white'
@@ -130,7 +193,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           />
         )}
 
-        {visibleLayers.water && (
+        {filterButtons.water && (
           <MapLayer
             data={layers.water}
             border='white'
@@ -140,34 +203,169 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
             fillOpacity={0.7}
           />
         )}
+
+        {filterButtons.restaurant && (
+          <MapLayer
+            data={layers.pois.restaurant}
+            border='white'
+            fill='#4F9FE3'
+            weight={1}
+            opacity={1}
+            fillOpacity={0.7}
+          />
+        )}
+
+        {filterButtons.cafe && (
+          <MapLayer
+            data={layers.pois.cafe}
+            border='white'
+            fill='#4F9FE3'
+            weight={1}
+            opacity={1}
+            fillOpacity={0.7}
+          />
+        )}
+
+        {filterButtons.theatre &&
+          layers.pois?.theatre?.features?.map((feature: GeoJSON.Feature, idx: number) => {
+            if (feature.geometry.type !== 'Point') return null;
+
+            const [lng, lat] = feature.geometry.coordinates;
+
+            return (
+              <Marker key={idx} position={[lat, lng]} icon={TheatreIcon}>
+                <Popup>
+                  <div className='text-xs'>
+                    <strong>{feature.properties?.name}</strong>
+                    <p>{feature.properties?.opening_hours}</p>
+                    <p>{feature.properties?.phone}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+
+        {filterButtons.museum &&
+          layers.pois?.museum?.features?.map((feature: GeoJSON.Feature, idx: number) => {
+            if (feature.geometry.type !== 'Point') return null;
+
+            const [lng, lat] = feature.geometry.coordinates;
+
+            return (
+              <Marker key={idx} position={[lat, lng]} icon={MuseumIcon}>
+                <Popup>
+                  <div className='text-xs'>
+                    <strong>{feature.properties?.name}</strong>
+                    <p>{feature.properties?.opening_hours}</p>
+                    <p>{feature.properties?.phone}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+
+        {filterButtons.busstop &&
+          layers.pois?.bus_stop?.features?.map((feature: GeoJSON.Feature, idx: number) => {
+            if (feature.geometry.type !== 'Point') return null;
+
+            const [lng, lat] = feature.geometry.coordinates;
+
+            return (
+              <Marker key={idx} position={[lat, lng]} icon={BusStopIcon}>
+                <Popup>
+                  <div className='flex text-xs'>
+                    {feature.properties?.bus && (
+                      <LuBusFront className='mr-2 inline text-xl text-yellow-400' />
+                    )}
+                    <div>
+                      <strong>{feature.properties?.name}</strong>
+                      <ul className='list-disc px-5 text-xs'>
+                        {feature.properties?.shelter && <li className='disc'>mit Dach</li>}
+                        {feature.properties?.bank && <li className='disc'>mit Bank</li>}
+                      </ul>
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
       </MapContainer>
 
       {/* Filter Buttons */}
-      <div className='grid grid-cols-4 gap-3 p-5'>
+      <div className='grid grid-cols-4 gap-3 p-5 sm:px-15 lg:px-20'>
         <button
           onClick={() => toggleLayer('buildings')}
-          className={visibleLayers.buildings ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+          className={filterButtons.buildings ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
         >
           Gebäude
         </button>
         <button
           onClick={() => toggleLayer('roads')}
-          className={visibleLayers.roads ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+          className={filterButtons.roads ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
         >
           Straßen
         </button>
         <button
           onClick={() => toggleLayer('green')}
-          className={visibleLayers.green ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+          className={filterButtons.green ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
         >
           Grünfläche
         </button>
         <button
           onClick={() => toggleLayer('water')}
-          className={visibleLayers.water ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+          className={filterButtons.water ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
         >
           Gewässer
         </button>
+
+        {filterButtons.showMore === 'yes' ? (
+          <>
+            <button
+              onClick={() => toggleLayer('restaurant')}
+              className={filterButtons.restaurant ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+            >
+              Restaurants
+            </button>
+            <button
+              onClick={() => toggleLayer('cafe')}
+              className={filterButtons.cafe ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+            >
+              Cafés
+            </button>
+            <button
+              onClick={() => toggleLayer('museum')}
+              className={filterButtons.museum ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+            >
+              Museen
+            </button>
+            <button
+              onClick={() => toggleLayer('theatre')}
+              className={filterButtons.theatre ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+            >
+              Theater
+            </button>
+            <button
+              onClick={() => toggleLayer('busstop')}
+              className={filterButtons.busstop ? 'btn-mapfilter' : 'btn-mapfilter-outline'}
+            >
+              Bushaltestellen
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => showMoreFilter()}
+            className='btn-mapfilter-outline'
+            disabled={filterButtons.showMore === 'pending'}
+          >
+            {filterButtons.showMore === 'pending' ? (
+              <>
+                <LuLoader className='animate-spin' /> <i>bitte Geduld</i>
+              </>
+            ) : (
+              '+ mehr Filter'
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
