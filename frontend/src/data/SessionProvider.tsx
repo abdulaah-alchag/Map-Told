@@ -90,7 +90,6 @@ const SessionProvider = ({ children }: { children: ReactNode }) => {
         type: null,
         features: [],
       },
-      pois: [],
     },
     weather: {
       time: null,

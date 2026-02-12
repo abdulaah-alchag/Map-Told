@@ -78,13 +78,15 @@ const geoFeatureCollectionsSchema = z.object({
     .optional(),
 });
 
-export const PoisSchema = z.object({
-  restaurant: geoFeatureCollectionsSchema,
-  cafe: geoFeatureCollectionsSchema,
-  museum: geoFeatureCollectionsSchema,
-  theatre: geoFeatureCollectionsSchema,
-  bus_stop: geoFeatureCollectionsSchema,
-});
+export const PoisSchema = z
+  .object({
+    restaurant: geoFeatureCollectionsSchema,
+    cafe: geoFeatureCollectionsSchema,
+    museum: geoFeatureCollectionsSchema,
+    theatre: geoFeatureCollectionsSchema,
+    bus_stop: geoFeatureCollectionsSchema,
+  })
+  .optional();
 
 export const ResponseDataSchema = z.object({
   zoneId: z.string().nullable(),
@@ -93,7 +95,7 @@ export const ResponseDataSchema = z.object({
     roads: geoFeatureCollectionsSchema,
     green: geoFeatureCollectionsSchema,
     water: geoFeatureCollectionsSchema,
-    pois: z.array(PoisSchema).optional(),
+    pois: PoisSchema,
   }),
 
   elevation: z.number().nullable(),
