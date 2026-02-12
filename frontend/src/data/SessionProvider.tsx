@@ -24,7 +24,7 @@ const locationFormReducer = (
 
     case 'UPDATE_DATA':
       return { ...state, inputs: action.payload };
-
+    
     case 'SET_PENDING':
       return { ...state, pending: action.payload };
 
@@ -42,6 +42,15 @@ const responseDataReducer = (
   switch (action.type) {
     case 'SET_DATA':
       return action.payload;
+    
+    case 'UPDATE_LAYERS':
+      return {
+      ..._state,
+      layers: {
+        ..._state.layers,
+        ...action.payload,
+      },
+      };
   }
 };
 

@@ -57,10 +57,15 @@ export type LocationFormActionType = z.infer<typeof LocationFormActionSchema>;
 
 // TODO: update schemas before rollout
 export const ResponseDataSchema = z.any();
+export const MapLayerSchema = z.any();
 export const ResponseDataActionSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('SET_DATA'),
     payload: ResponseDataSchema,
+  }),
+  z.object({
+    type: z.literal('UPDATE_LAYERS'),
+    payload: MapLayerSchema,
   }),
 ]);
 
