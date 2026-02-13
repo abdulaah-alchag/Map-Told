@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { LuLoader, LuSearch } from 'react-icons/lu';
 
 import { useSession } from '@data';
-import type { LocationFormInputsType } from '@types';
-import { scrollToElementID, sleep } from '@utils';
+import type { ErrorFields, LocationFormInputsType } from '@types';
+import { scrollToElementID, sleep, validate } from '@utils';
 
 export const LocationForm = () => {
   const { locationform, dispatchLocationForm, dispatchResponseData } = useSession();
+  const [errors, setErrors] = useState<ErrorFields>();
   const [error, setError] = useState<string | null>();
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,6 +22,16 @@ export const LocationForm = () => {
 
   const submitAction = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const validationErrors = validate(locationform.inputs, locationform.mask);
+    setErrors(validationErrors);
+
+    const hasAddressErrors = Object.values(validationErrors.address).some((err) => !!err);
+    const hasCoordinatesErrors = Object.values(validationErrors.coordinates).some((err) => !!err);
+
+    if (hasAddressErrors || hasCoordinatesErrors) {
+      return;
+    }
 
     dispatchLocationForm({ type: 'SET_PENDING', payload: true });
 
@@ -178,7 +189,7 @@ export const LocationForm = () => {
                     type='text'
                     className='input w-full'
                     placeholder='Strasse'
-                    required={locationform.mask === 'address'}
+                    // required={locationform.mask === 'address'}
                     disabled={locationform.pending}
                     value={locationform.inputs.street ?? ''}
                     onChange={changeHandler}
@@ -188,19 +199,26 @@ export const LocationForm = () => {
                     type='text'
                     className='input w-full'
                     placeholder='Nr'
-                    required={locationform.mask === 'address'}
+                    // required={locationform.mask === 'address'}
                     disabled={locationform.pending}
                     value={locationform.inputs.house ?? ''}
                     onChange={changeHandler}
                   />
                 </div>
+                {errors?.address?.street && (
+                  <p className='text-sm text-red-600'>{errors.address.street} </p>
+                )}
+                {errors?.address?.house && (
+                  <p className='text-sm text-red-600'>{errors.address.house} </p>
+                )}
+
                 <div className='grid grid-cols-[30%_1fr] gap-2'>
                   <input
                     name='postcode'
                     type='text'
                     className='input w-full'
                     placeholder='PLZ'
-                    required={locationform.mask === 'address'}
+                    // required={locationform.mask === 'address'}
                     disabled={locationform.pending}
                     value={locationform.inputs.postcode ?? ''}
                     onChange={changeHandler}
@@ -210,43 +228,58 @@ export const LocationForm = () => {
                     type='text'
                     className='input w-full'
                     placeholder='Stadt'
-                    required={locationform.mask === 'address'}
+                    // required={locationform.mask === 'address'}
                     disabled={locationform.pending}
                     value={locationform.inputs.city ?? ''}
                     onChange={changeHandler}
                   />
                 </div>
+                {errors?.address?.postcode && (
+                  <p className='text-sm text-red-600'>{errors.address.postcode} </p>
+                )}
+                {errors?.address?.city && (
+                  <p className='text-sm text-red-600'>{errors.address.city} </p>
+                )}
               </>
             )}
             {/* COORDINATES FORM ========================================== */}
             {locationform.mask === 'coordinates' && (
-              <div className='grid gap-2'>
-                <input
-                  name='longitude'
-                  type='number'
-                  className='input w-full'
-                  placeholder='Längengrad (Longitude)'
-                  step={0.0001}
-                  required={locationform.mask === 'coordinates'}
-                  disabled={locationform.pending}
-                  value={locationform.inputs.longitude ?? ''}
-                  onChange={changeHandler}
-                />
-                <input
-                  name='latitude'
-                  type='number'
-                  className='input w-full'
-                  placeholder='Breitengrad (Latitude)'
-                  step={0.0001}
-                  required={locationform.mask === 'coordinates'}
-                  disabled={locationform.pending}
-                  value={locationform.inputs.latitude ?? ''}
-                  onChange={changeHandler}
-                />
-              </div>
+              <>
+                <div className='grid gap-2'>
+                  <input
+                    name='longitude'
+                    type='number'
+                    className='input w-full'
+                    placeholder='Längengrad (Longitude)'
+                    step={0.0001}
+                    // required={locationform.mask === 'coordinates'}
+                    disabled={locationform.pending}
+                    value={locationform.inputs.longitude ?? ''}
+                    onChange={changeHandler}
+                  />
+                  {errors?.coordinates?.longitude && (
+                    <p className='text-sm text-red-600'>{errors.coordinates.longitude} </p>
+                  )}
+                  <input
+                    name='latitude'
+                    type='number'
+                    className='input w-full'
+                    placeholder='Breitengrad (Latitude)'
+                    step={0.0001}
+                    // required={locationform.mask === 'coordinates'}
+                    disabled={locationform.pending}
+                    value={locationform.inputs.latitude ?? ''}
+                    onChange={changeHandler}
+                  />
+                  {errors?.coordinates?.latitude && (
+                    <p className='text-sm text-red-600'>{errors.coordinates.latitude} </p>
+                  )}
+                </div>
+              </>
             )}
 
             {/* ERROR MESSAGE ============================================= */}
+
             {error && <p className='my-2 text-sm text-red-600'>{error} </p>}
 
             {/* SUBMIT BUTTON ============================================= */}
