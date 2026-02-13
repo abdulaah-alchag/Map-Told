@@ -237,7 +237,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
         )}
 
         {filterButtons.restaurant &&
-          layers.pois?.restaurant?.features?.map((feature, idx) => {
+          layers.pois?.restaurant?.features?.map((feature: Feature, idx: number) => {
             if (feature.geometry.type !== 'Point') return null;
 
             const coords = feature.geometry.coordinates;
@@ -265,7 +265,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           })}
 
         {filterButtons.cafe &&
-          layers.pois?.cafe?.features?.map((feature, idx) => {
+          layers.pois?.cafe?.features?.map((feature: Feature, idx: number) => {
             if (feature.geometry.type !== 'Point') return null;
 
             const coords = feature.geometry.coordinates;
@@ -293,7 +293,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           })}
 
         {filterButtons.theatre &&
-          layers.pois?.theatre?.features?.map((feature, idx) => {
+          layers.pois?.theatre?.features?.map((feature: Feature, idx: number) => {
             if (feature.geometry.type !== 'Point') return null;
 
             const coords = feature.geometry.coordinates;
@@ -321,7 +321,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           })}
 
         {filterButtons.museum &&
-          layers.pois?.museum?.features?.map((feature, idx) => {
+          layers.pois?.museum?.features?.map((feature: Feature, idx: number) => {
             if (feature.geometry.type !== 'Point') return null;
 
             const coords = feature.geometry.coordinates;
@@ -344,7 +344,7 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           })}
 
         {filterButtons.busstop &&
-          layers.pois?.bus_stop?.features?.map((feature, idx) => {
+          layers.pois?.bus_stop?.features?.map((feature: Feature, idx: number) => {
             if (feature.geometry.type !== 'Point') return null;
 
             const coords = feature.geometry.coordinates;
