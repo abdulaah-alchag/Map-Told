@@ -22,8 +22,24 @@ const DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
+const RestaurantIcon = L.icon({
+  iconUrl: '../src/assets/images/map-icon-restaurant.png',
+  shadowUrl: iconShadow,
+  iconSize: [30, 30],
+  iconAnchor: [10, 20],
+  popupAnchor: [5, -12],
+});
+
+const CafeIcon = L.icon({
+  iconUrl: '../src/assets/images/map-icon-cafe.png',
+  shadowUrl: iconShadow,
+  iconSize: [30, 30],
+  iconAnchor: [10, 20],
+  popupAnchor: [5, -12],
+});
+
 const TheatreIcon = L.icon({
-  iconUrl: 'https://img.icons8.com/color/512w/theatre-mask.png',
+  iconUrl: '../src/assets/images/map-icon-theatre.png',
   shadowUrl: iconShadow,
   iconSize: [30, 30],
   iconAnchor: [10, 20],
@@ -31,8 +47,7 @@ const TheatreIcon = L.icon({
 });
 
 const MuseumIcon = L.icon({
-  iconUrl:
-    'https://cdn.iconscout.com/icon/free/png-256/free-museum-icon-svg-download-png-2125096.png',
+  iconUrl: '../src/assets/images/map-icon-museum.png',
   shadowUrl: iconShadow,
   iconSize: [30, 30],
   iconAnchor: [10, 20],
@@ -40,8 +55,7 @@ const MuseumIcon = L.icon({
 });
 
 const BusStopIcon = L.icon({
-  iconUrl:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/SymbolStrassenbahnhaltestelle.svg/1280px-SymbolStrassenbahnhaltestelle.svg.png',
+  iconUrl: '../src/assets/images/map-icon-busstop.png',
   shadowUrl: iconShadow,
   iconSize: [30, 30],
   iconAnchor: [10, 20],
@@ -204,27 +218,57 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
           />
         )}
 
-        {filterButtons.restaurant && (
-          <MapLayer
-            data={layers.pois.restaurant}
-            border='white'
-            fill='#4F9FE3'
-            weight={1}
-            opacity={1}
-            fillOpacity={0.7}
-          />
-        )}
+        {filterButtons.restaurant &&
+          layers.pois?.restaurant?.features?.map((feature: GeoJSON.Feature, idx: number) => {
+            if (feature.geometry.type !== 'Point') return null;
 
-        {filterButtons.cafe && (
-          <MapLayer
-            data={layers.pois.cafe}
-            border='white'
-            fill='#4F9FE3'
-            weight={1}
-            opacity={1}
-            fillOpacity={0.7}
-          />
-        )}
+            const [lng, lat] = feature.geometry.coordinates;
+
+            return (
+              <Marker key={idx} position={[lat, lng]} icon={RestaurantIcon}>
+                <Popup>
+                  <div className='text-xs'>
+                    <strong>{feature.properties?.name}</strong>
+                    <p>{feature.properties?.opening_hours}</p>
+                    <p>
+                      <a href={`tel:${feature.properties?.phone}`}>{feature.properties?.phone}</a>
+                    </p>
+                    <p>
+                      <a href={feature.properties?.website} target='_blank'>
+                        {feature.properties?.website}
+                      </a>
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+
+        {filterButtons.cafe &&
+          layers.pois?.cafe?.features?.map((feature: GeoJSON.Feature, idx: number) => {
+            if (feature.geometry.type !== 'Point') return null;
+
+            const [lng, lat] = feature.geometry.coordinates;
+
+            return (
+              <Marker key={idx} position={[lat, lng]} icon={CafeIcon}>
+                <Popup>
+                  <div className='text-xs'>
+                    <strong>{feature.properties?.name}</strong>
+                    <p>{feature.properties?.opening_hours}</p>
+                    <p>
+                      <a href={`tel:${feature.properties?.phone}`}>{feature.properties?.phone}</a>
+                    </p>
+                    <p>
+                      <a href={feature.properties?.website} target='_blank'>
+                        {feature.properties?.website}
+                      </a>
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
 
         {filterButtons.theatre &&
           layers.pois?.theatre?.features?.map((feature: GeoJSON.Feature, idx: number) => {
@@ -238,7 +282,14 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
                   <div className='text-xs'>
                     <strong>{feature.properties?.name}</strong>
                     <p>{feature.properties?.opening_hours}</p>
-                    <p>{feature.properties?.phone}</p>
+                    <p>
+                      <a href={`tel:${feature.properties?.phone}`}>{feature.properties?.phone}</a>
+                    </p>
+                    <p>
+                      <a href={feature.properties?.url} target='_blank'>
+                        {feature.properties?.url}
+                      </a>
+                    </p>
                   </div>
                 </Popup>
               </Marker>
@@ -257,7 +308,9 @@ export const LeafletMap = ({ className = '' }: { className?: string }) => {
                   <div className='text-xs'>
                     <strong>{feature.properties?.name}</strong>
                     <p>{feature.properties?.opening_hours}</p>
-                    <p>{feature.properties?.phone}</p>
+                    <p>
+                      <a href={`tel:${feature.properties?.phone}`}>{feature.properties?.phone}</a>
+                    </p>
                   </div>
                 </Popup>
               </Marker>
