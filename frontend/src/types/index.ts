@@ -100,3 +100,19 @@ export const ResponseDataActionSchema = z.discriminatedUnion('type', [
 
 export type ResponseDataType = z.infer<typeof ResponseDataSchema>;
 export type ResponseDataActionType = z.infer<typeof ResponseDataActionSchema>;
+
+/* ───────── Errors ─────────────── */
+export const ErrorFieldsSchema = z.object({
+  address: z.object({
+    street: z.string(),
+    house: z.string(),
+    city: z.string(),
+    postcode: z.string(),
+  }),
+  coordinates: z.object({
+    longitude: z.string(),
+    latitude: z.string(),
+  }),
+});
+
+export type ErrorFields = z.infer<typeof ErrorFieldsSchema>;
