@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import z from 'zod';
 
 import { useSession } from '@data';
 
@@ -19,7 +18,7 @@ export const Chat = () => {
   const submitAction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPending(true);
-    console.log(zoneId);
+    console.log('zoneId:', zoneId);
     const form = e.currentTarget;
     const promptValue = form.prompt.value;
 
