@@ -19,6 +19,7 @@ export const Chat = () => {
     e.preventDefault();
     setPending(true);
     console.log('zoneId:', zoneId);
+
     const form = e.currentTarget;
     const promptValue = form.prompt.value;
 
