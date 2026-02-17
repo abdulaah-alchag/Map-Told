@@ -322,7 +322,7 @@ export const LocationForm = () => {
 
             {/* SUBMIT BUTTON ============================================= */}
             <button
-              className={`btn btn-secondary m-auto mt-4 w-full text-white ${locationform.pending ? 'bg-mt-color-11 cursor-not-allowed' : 'bg-mt-color-31'}`}
+              className={`btn btn-secondary m-auto mt-4 mb-10 w-full text-white ${locationform.pending ? 'bg-mt-color-11 cursor-not-allowed' : 'bg-mt-color-31'}`}
               disabled={locationform.pending}
             >
               {locationform.pending ? (
