@@ -191,6 +191,8 @@ export const LocationForm = () => {
                   <input
                     name='street'
                     type='text'
+                    aria-invalid={!!errors?.address?.street}
+                    aria-describedby={errors?.address?.street ? 'street-error' : undefined}
                     className='input w-full'
                     placeholder='Strasse'
                     // required={locationform.mask === 'address'}
@@ -201,6 +203,8 @@ export const LocationForm = () => {
                   <input
                     name='house'
                     type='text'
+                    aria-invalid={!!errors?.address?.house}
+                    aria-describedby={errors?.address?.house ? 'house-error' : undefined}
                     className='input w-full'
                     placeholder='Nr'
                     // required={locationform.mask === 'address'}
@@ -209,11 +213,12 @@ export const LocationForm = () => {
                     onChange={changeHandler}
                   />
                 </div>
-
                 <div className='grid grid-cols-[30%_1fr] gap-2'>
                   <input
                     name='postcode'
                     type='text'
+                    aria-invalid={!!errors?.address?.postcode}
+                    aria-describedby={errors?.address?.postcode ? 'postcode-error' : undefined}
                     className='input w-full'
                     placeholder='PLZ'
                     // required={locationform.mask === 'address'}
@@ -224,6 +229,8 @@ export const LocationForm = () => {
                   <input
                     name='city'
                     type='text'
+                    aria-invalid={!!errors?.address?.city}
+                    aria-describedby={errors?.address?.city ? 'city-error' : undefined}
                     className='input w-full'
                     placeholder='Stadt'
                     // required={locationform.mask === 'address'}
@@ -232,15 +239,19 @@ export const LocationForm = () => {
                     onChange={changeHandler}
                   />
                 </div>
+
                 {errors?.address && (
-                  <ul className='text-sm text-red-600'>
-                    {errors.address.street && <li className='mb-0.5'>{errors.address.street}</li>}
-                    {errors.address.house && <li className='mb-0.5'>{errors.address.house}</li>}
-                    {errors.address.postcode && (
-                      <li className='mb-0.5'>{errors.address.postcode}</li>
-                    )}
-                    {errors.address.city && <li className='mb-0.5'>{errors.address.city}</li>}
-                  </ul>
+                  <div role='alert' aria-live='assertive'>
+                    <ul className='text-sm text-red-600'>
+                      {Object.entries(errors.address)
+                        .filter(([, error]) => !!error)
+                        .map(([field, error]) => (
+                          <li key={field} id={`${field}-error`} className='mb-0.5'>
+                            {error}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
                 )}
               </>
             )}
@@ -251,6 +262,10 @@ export const LocationForm = () => {
                   <input
                     name='longitude'
                     type='number'
+                    aria-invalid={!!errors?.coordinates?.longitude}
+                    aria-describedby={
+                      errors?.coordinates?.longitude ? 'longitude-error' : undefined
+                    }
                     className='input w-full'
                     placeholder='Längengrad (Longitude)'
                     step={0.0001}
@@ -260,11 +275,20 @@ export const LocationForm = () => {
                     onChange={changeHandler}
                   />
                   {errors?.coordinates?.longitude && (
-                    <p className='text-sm text-red-600'>{errors.coordinates.longitude} </p>
+                    <span
+                      id='longitude-error'
+                      className='text-sm text-red-600'
+                      role='alert'
+                      aria-live='assertive'
+                    >
+                      {errors.coordinates.longitude}{' '}
+                    </span>
                   )}
                   <input
                     name='latitude'
                     type='number'
+                    aria-invalid={!!errors?.coordinates?.latitude}
+                    aria-describedby={errors?.coordinates?.latitude ? 'latitude-error' : undefined}
                     className='input w-full'
                     placeholder='Breitengrad (Latitude)'
                     step={0.0001}
@@ -274,7 +298,14 @@ export const LocationForm = () => {
                     onChange={changeHandler}
                   />
                   {errors?.coordinates?.latitude && (
-                    <p className='text-sm text-red-600'>{errors.coordinates.latitude} </p>
+                    <span
+                      id='latitude-error'
+                      className='text-sm text-red-600'
+                      role='alert'
+                      aria-live='assertive'
+                    >
+                      {errors.coordinates.latitude}{' '}
+                    </span>
                   )}
                 </div>
               </>
@@ -282,7 +313,11 @@ export const LocationForm = () => {
 
             {/* ERROR MESSAGE ============================================= */}
 
-            {error && <p className='my-2 text-sm text-red-600'>{error} </p>}
+            {error && (
+              <p className='my-2 text-sm text-red-600' role='alert' aria-live='polite'>
+                {error}{' '}
+              </p>
+            )}
 
             {/* SUBMIT BUTTON ============================================= */}
             <button
