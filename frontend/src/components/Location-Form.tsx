@@ -12,7 +12,7 @@ export const LocationForm = () => {
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.currentTarget;
-    const newValue = value === '' ? null : type === 'number' ? Number(value) : value;
+    const newValue = type === 'number' ? (value !== '' ? Number(value) : 0) : value;
     const newInputs: LocationFormInputsType = {
       ...locationform.inputs,
       [name]: newValue,
@@ -232,16 +232,19 @@ export const LocationForm = () => {
                     onChange={changeHandler}
                   />
                 </div>
-                {errors?.address && (
-                  <ul className='text-sm text-red-600'>
-                    {errors.address.street && <li className='mb-0.5'>{errors.address.street}</li>}
-                    {errors.address.house && <li className='mb-0.5'>{errors.address.house}</li>}
-                    {errors.address.postcode && (
-                      <li className='mb-0.5'>{errors.address.postcode}</li>
-                    )}
-                    {errors.address.city && <li className='mb-0.5'>{errors.address.city}</li>}
-                  </ul>
-                )}
+                {errors?.address &&
+                  Object.values(errors.address).some(
+                    (err) => typeof err === 'string' && err.length > 0,
+                  ) && (
+                    <ul className='text-sm text-red-600'>
+                      {errors.address.street && <li className='mb-0.5'>{errors.address.street}</li>}
+                      {errors.address.house && <li className='mb-0.5'>{errors.address.house}</li>}
+                      {errors.address.postcode && (
+                        <li className='mb-0.5'>{errors.address.postcode}</li>
+                      )}
+                      {errors.address.city && <li className='mb-0.5'>{errors.address.city}</li>}
+                    </ul>
+                  )}
               </>
             )}
             {/* COORDINATES FORM ========================================== */}
@@ -254,7 +257,6 @@ export const LocationForm = () => {
                     className='input w-full'
                     placeholder='Längengrad (Longitude)'
                     step={0.0001}
-                    // required={locationform.mask === 'coordinates'}
                     disabled={locationform.pending}
                     value={locationform.inputs.longitude ?? ''}
                     onChange={changeHandler}
@@ -268,7 +270,6 @@ export const LocationForm = () => {
                     className='input w-full'
                     placeholder='Breitengrad (Latitude)'
                     step={0.0001}
-                    // required={locationform.mask === 'coordinates'}
                     disabled={locationform.pending}
                     value={locationform.inputs.latitude ?? ''}
                     onChange={changeHandler}
