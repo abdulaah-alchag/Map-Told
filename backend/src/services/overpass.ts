@@ -10,7 +10,7 @@ const generateCacheKey = (query: string): string => {
 
 /* Fetch OSM data from Overpass API based on a custom query */
 export async function fetchOsmData(query: string): Promise<OsmElements> {
-  // console.log('Fetching OSM data with query:', query);
+  console.log('OVERPASS QUERY:', query);
 
   // Check cache first
   const cacheKey = `overpass:${generateCacheKey(query)}`;
@@ -24,14 +24,24 @@ export async function fetchOsmData(query: string): Promise<OsmElements> {
 
   // console.log('Cache miss for query, fetching from Overpass API');
 
+  console.log('OVERPASS URL:', OVERPASS_API_URL);
   const response = await fetch(OVERPASS_API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: query
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      Accept: 'application/json',
+      'User-Agent': 'MapTold/1.0 contact@example.com'
+    },
+    body: new URLSearchParams({
+      data: query
+    })
   });
 
-  if (!response.ok) throw new Error(`Failed to fetch OSM data`, { cause: { status: response.status } });
-
+  if (!response.ok) {
+    const text = await response.text();
+    console.error('OVERPASS ERROR:', response.status, text);
+    throw new Error(`Failed to fetch OSM data`, { cause: { status: response.status } });
+  }
   const data = (await response.json()) as OsmElements;
   cache.set(cacheKey, data);
 
